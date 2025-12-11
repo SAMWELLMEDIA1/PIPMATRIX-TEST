@@ -1,0 +1,54 @@
+“I want you to rebuild the entire crypto payment system on my website using my real wallet addresses below. Remove all old wallet addresses, dummy wallets, old QR codes, and any outdated payment logic. Replace EVERYTHING with these new wallets only:
+BTC: bc1q8a07p9n6xlwvaare2a9dghtvtk5zd232ca55q0
+ETH: 0x11722310395Dd27de946F5B87F79da16Ea2fdECe
+BNB: 0x11722310395Dd27de946F5B87F79da16Ea2fdECe
+SOLANA: GdLjdGR6GWxPoYDvfvLbfAgNhNDMNE3B6sXCzrwHCT8r
+DOGE: DPN2z9snmiM7w3bqkHqRS8NJiYyHYE4Js8
+USDT (TRC20): TMWtrR9eAe1crQyyUoF1E9eZBaanxCDTs1
+XRP: rUBFJqt1WCcYH88o7keaRV5CBoKAaA5AC
+WHAT I WANT YOU TO DO
+1. Detect Crypto Type + Network Automatically
+When a user selects a payment option:
+Detect correct crypto name
+Detect correct network (BTC, ETH, BNB Chain, Solana, TRC20, DOGE, XRP)
+Load the right wallet address automatically
+Validate the format so no wrong network shows the wrong wallet
+2. Generate QR Codes Dynamically
+For each wallet above, generate a QR code using a QR library.
+The QR code must encode the EXACT wallet address with no mistakes.
+3. Build the Payment Page UI + Logic
+When a user clicks “Pay with BTC/ETH/USDT/etc”, open a new page that shows:
+The selected cryptocurrency
+My wallet address (correct one)
+The generated QR code
+The network name
+Input for “Transaction Hash / TXID”
+File upload for payment screenshot/receipt
+A submit button
+After submit:
+Save deposit request in backend
+Attach TXID + receipt file
+Store crypto type + network
+Show it in Deposit History as “Pending”
+Notify admin
+4. Remove All Dummy Payment Data
+Delete any leftover:
+old QR images
+old wallet addresses
+old payment API endpoints
+hardcoded example deposits
+cloned-site payment files
+unused crypto networks
+Everything must use ONLY my wallet addresses above.
+5. Make the Payment System Error-Proof
+Never mix networks (example: USDT-ERC20 must NOT show TRC20 wallet)
+Never display wrong wallet address
+No hardcoded sample deposits
+No placeholder addresses
+Make sure backend receives real user inputs
+Important Final Instructions
+DO NOT change my wallet addresses.
+DO NOT add any dummy wallets.
+DO NOT add fake QR codes.
+Use my real wallet addresses only.
+Return the updated code and tell me where changes were made.

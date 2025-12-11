@@ -1,0 +1,114 @@
+I need you to analyze this entire project from top to bottom, both frontend and backend, and rebuild everything that is missing or broken. The website was cloned from an old site, so many parts are still showing dummy data and missing backend logic.
+Here is EXACTLY what I need you to do:
+1. FULL PROJECT SCAN
+Scan all files:
+All frontend pages
+All components
+All scripts
+All backend routes
+All backend controllers
+All models
+All utilities
+All APIs
+Identify:
+Missing backend logic
+Wrong fetch calls
+Routes that do not exist
+Static HTML values
+Hardcoded dummy data
+Unlinked features
+Any leftover code from the cloned website
+You must fix ALL of it.
+2. REMOVE ALL DUMMY DATA
+Delete ALL hardcoded or pre-filled data across every page, including:
+Dummy notifications
+Dummy BTC balance (currently showing 4 million)
+Dummy withdrawal history
+Dummy deposit history
+Dummy account statement
+Dummy trades
+Dummy user profile
+Any saved data from the previous website
+Everything must be reset to ZERO / EMPTY unless the new user actually performs an action.
+3. REBUILD THE BACKEND PERFECTLY
+You must rebuild ALL backend logic needed for every page to work properly.
+Create or fix backend routes for:
+User System
+POST /register
+POST /login
+GET /user/:id
+PUT /user/:id/update
+Wallet & Transactions
+GET /user/:id/balance → default should be 0
+GET /user/:id/deposits
+GET /user/:id/withdrawals
+GET /user/:id/statements
+POST /deposit
+POST /withdraw
+POST /trade
+Notifications
+GET /user/:id/notifications
+POST /notifications/create → automatically triggered when:
+User deposits
+User withdraws
+Admin approves something
+User opens a trade
+Trade closes
+Balance updates
+Make sure:
+All responses are real dynamic data
+No static or hardcoded JSON responses
+Each user only sees their own data
+4. FIX ALL FRONTEND FETCH CALLS
+Every page that loads data must use API calls only, not dummy HTML.
+Examples:
+Deposit History Page
+Fetch from /user/:id/deposits
+Withdrawal History Page
+Fetch from /user/:id/withdrawals
+Account Statement Page
+Fetch from /user/:id/statements
+Notifications Page
+Fetch from /user/:id/notifications
+If empty → show “No notifications yet”
+Dashboard
+Fetch:
+User profile
+Balance (default 0)
+Latest transactions
+Notifications count
+Remove the hardcoded BTC balance (4,000,000).
+Set it to 0 unless backend returns a real number.
+5. RESET NOTIFICATIONS
+Right now:
+Notifications list is empty
+But clicking still shows old notifications from the cloned site
+You must:
+Remove ALL old notification data completely
+Ensure the notifications page loads ONLY from backend
+Make notification list EMPTY for new users
+Automatically generate notifications when real actions happen
+6. FIX ANY “FAILED TO FETCH” ERRORS
+Check:
+API endpoints
+CORS settings
+Body parser
+HTTP methods
+Missing routes
+Wrong URLs
+Incorrect port
+Missing database functions
+Every fetch should work correctly with the backend.
+7. FINAL TESTING
+After fixing everything:
+Register a new user
+Log in
+Dashboard displays only new user data
+All pages are empty until user performs actions
+Deposit → appears in deposit history + notification
+Withdrawal → appears in withdrawal history + notification
+Trade → appears and updates account
+No dummy data anywhere
+No leftover cloned content
+No broken pages
+No “Failed to fetch”
