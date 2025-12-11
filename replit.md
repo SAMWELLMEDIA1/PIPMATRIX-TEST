@@ -78,6 +78,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Updates (December 11, 2025)
 
+### Investment Pages Connected to Deposit Portal
+- **STOCK.html, CRYPTO.html, REALESTATE.html**: All "Invest" buttons now redirect to DEPOSIT.html with query parameters
+- **Query Parameters**: source (stock/crypto/realestate), plan (plan name), amount (investment amount)
+- **Plan Names**:
+  - Stock: Starter, Growth, Premium, Elite
+  - Crypto: Starter, Growth, Basic, Standard, Premium, Elite
+  - Real Estate: Starter, Growth, Premium, Elite
+- **Implementation**: JavaScript goToDeposit() function replaces form submission, uses Alpine.js for amount binding
+- **Unified Flow**: Users select plan → enter amount → click "Invest" → redirected to deposit portal with pre-filled info
+
 ### Comprehensive Crypto Payment System Implementation
 - **Rebuilt DEPOSIT.html** with 3-step crypto deposit flow: select cryptocurrency → enter amount & view wallet → submit transaction proof
 - **Dynamic QR Code Generation** for all 7 wallet addresses using server-side qrcode library
