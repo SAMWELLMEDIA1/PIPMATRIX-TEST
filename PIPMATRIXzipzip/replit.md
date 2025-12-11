@@ -86,7 +86,10 @@ A full-stack trading platform built with Flask backend and HTML/Tailwind CSS fro
 
 ## Recent Changes
 
-### December 11, 2025 - Payment Modal Integration
+### December 11, 2025 - Wallet Connection & Payment Enhancements
+- Created CONNECT.html with wallet selection interface (14+ major wallets)
+- Updated Dashboard "Connect Wallet" button to navigate to CONNECT.html
+- Wallet page includes search functionality and dark theme styling matching Pip Matrix
 - Created shared `paymentModal.js` component for consistent payment method selection across pages
 - Updated BOT.html with payment modal - all 55 "Invest Now" buttons now open crypto payment selection modal
 - Updated PREMIUM.html with payment modal for subscription purchases
