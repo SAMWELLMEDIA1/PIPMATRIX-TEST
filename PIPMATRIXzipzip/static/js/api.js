@@ -12,8 +12,11 @@ const api = {
             ...options
         };
         
-        if (options.body && typeof options.body === 'object') {
+        if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
             config.body = JSON.stringify(options.body);
+        } else if (options.body instanceof FormData) {
+            delete config.headers['Content-Type'];
+            config.body = options.body;
         }
         
         try {
@@ -99,6 +102,23 @@ const api = {
             return api.request('/transfer', {
                 method: 'POST',
                 body: { amount, recipient }
+            });
+        }
+    },
+
+    crypto: {
+        async getWallets() {
+            return api.request('/crypto/wallets');
+        },
+
+        async getWallet(cryptoId) {
+            return api.request(`/crypto/wallet/${cryptoId}`);
+        },
+
+        async submitDeposit(formData) {
+            return api.request('/deposit/crypto', {
+                method: 'POST',
+                body: formData
             });
         }
     },
@@ -358,6 +378,138 @@ function userData() {
     };
 }
 
+function cryptoPayment() {
+    return {
+        wallets: [],
+        selectedCrypto: null,
+        amount: '',
+        txid: '',
+        receiptFile: null,
+        loading: false,
+        submitting: false,
+        step: 1,
+
+        async init() {
+            this.loading = true;
+            try {
+                const data = await api.crypto.getWallets();
+                if (data.success) {
+                    this.wallets = data.wallets;
+                }
+            } catch (error) {
+                console.error('Failed to load wallets:', error);
+                showNotification('Failed to load payment options', 'error');
+            }
+            this.loading = false;
+        },
+
+        selectCrypto(wallet) {
+            this.selectedCrypto = wallet;
+            this.step = 2;
+        },
+
+        goBack() {
+            if (this.step > 1) {
+                this.step--;
+                if (this.step === 1) {
+                    this.selectedCrypto = null;
+                }
+            }
+        },
+
+        proceedToPayment() {
+            if (!this.amount || parseFloat(this.amount) <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+            this.step = 3;
+        },
+
+        handleFileChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+                if (!allowedTypes.includes(file.type)) {
+                    showNotification('Invalid file type. Please upload JPG, PNG, GIF, or PDF', 'error');
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    showNotification('File too large. Maximum 10MB allowed', 'error');
+                    return;
+                }
+                this.receiptFile = file;
+            }
+        },
+
+        async copyAddress() {
+            try {
+                await navigator.clipboard.writeText(this.selectedCrypto.address);
+                showNotification('Wallet address copied!', 'success');
+            } catch (error) {
+                const input = document.createElement('input');
+                input.value = this.selectedCrypto.address;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showNotification('Wallet address copied!', 'success');
+            }
+        },
+
+        async submitDeposit() {
+            if (!this.txid) {
+                showNotification('Please enter the transaction hash (TXID)', 'error');
+                return;
+            }
+
+            this.submitting = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('amount', this.amount);
+                formData.append('crypto_type', this.selectedCrypto.id);
+                formData.append('txid', this.txid);
+                if (this.receiptFile) {
+                    formData.append('receipt', this.receiptFile);
+                }
+
+                const result = await api.crypto.submitDeposit(formData);
+                
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deposit Submitted!',
+                        text: `Your ${this.selectedCrypto.name} deposit of $${this.amount} has been submitted. Reference: ${result.reference}`,
+                        confirmButtonColor: '#3B82F6'
+                    }).then(() => {
+                        window.location.href = 'ACCOUNTHISTORY.html';
+                    });
+                } else {
+                    showNotification(result.message || 'Failed to submit deposit', 'error');
+                }
+            } catch (error) {
+                console.error('Deposit submission error:', error);
+                showNotification(error.message || 'Failed to submit deposit', 'error');
+            }
+
+            this.submitting = false;
+        },
+
+        getCryptoIcon(iconName) {
+            const icons = {
+                'bitcoin': `<svg viewBox="0 0 32 32" class="w-8 h-8"><circle cx="16" cy="16" r="16" fill="#F7931A"/><path d="M22.7 13.2c.3-2-1.2-3.1-3.3-3.8l.7-2.7-1.6-.4-.7 2.7c-.4-.1-.9-.2-1.3-.3l.7-2.7-1.6-.4-.7 2.7c-.3-.1-.7-.2-1-.3l-2.2-.6-.4 1.7s1.2.3 1.2.3c.7.2.8.6.8 1l-2 7.9c-.1.2-.3.5-.8.4 0 0-1.2-.3-1.2-.3l-.8 1.9 2.1.5c.4.1.8.2 1.2.3l-.7 2.7 1.6.4.7-2.7c.5.1.9.2 1.4.3l-.7 2.7 1.6.4.7-2.7c2.8.5 4.9.3 5.8-2.2.7-2-.1-3.2-1.5-4 1.1-.3 1.9-1 2.1-2.5zm-3.8 5.3c-.5 2-3.9.9-5 .7l.9-3.6c1.1.3 4.6.8 4.1 2.9zm.5-5.4c-.5 1.8-3.3.9-4.2.7l.8-3.2c.9.2 3.9.6 3.4 2.5z" fill="#fff"/></svg>`,
+                'ethereum': `<svg viewBox="0 0 32 32" class="w-8 h-8"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16.5 4v8.9l7.5 3.3-7.5-12.2z" fill="#fff" fill-opacity=".6"/><path d="M16.5 4L9 16.2l7.5-3.3V4z" fill="#fff"/><path d="M16.5 21.9v6.1L24 17.6l-7.5 4.3z" fill="#fff" fill-opacity=".6"/><path d="M16.5 28v-6.1L9 17.6l7.5 10.4z" fill="#fff"/><path d="M16.5 20.5l7.5-4.3-7.5-3.4v7.7z" fill="#fff" fill-opacity=".2"/><path d="M9 16.2l7.5 4.3v-7.7L9 16.2z" fill="#fff" fill-opacity=".6"/></svg>`,
+                'bnb': `<svg viewBox="0 0 32 32" class="w-8 h-8"><circle cx="16" cy="16" r="16" fill="#F3BA2F"/><path d="M12.1 14.3L16 10.4l3.9 3.9 2.3-2.3L16 5.8 9.8 12l2.3 2.3zm-2.3 1.7L7.5 16l2.3 2.3 2.3-2.3-2.3-2.3zm6.2 4.4L12.1 16.5l-2.3 2.3L16 25l6.2-6.2-2.3-2.3-3.9 3.9zm6.2-4.4l-2.3 2.3 2.3 2.3 2.3-2.3-2.3-2.3zM16 13.7l-2.3 2.3 2.3 2.3 2.3-2.3-2.3-2.3z" fill="#fff"/></svg>`,
+                'solana': `<svg viewBox="0 0 32 32" class="w-8 h-8"><circle cx="16" cy="16" r="16" fill="url(#sol)"/><defs><linearGradient id="sol" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00FFA3"/><stop offset="100%" style="stop-color:#DC1FFF"/></linearGradient></defs><path d="M10.3 20.4a.5.5 0 01.4-.2h13.6c.2 0 .4.3.2.5l-2.5 2.5a.5.5 0 01-.4.2H8c-.2 0-.4-.3-.2-.5l2.5-2.5zm0-8.8a.5.5 0 01.4-.2h13.6c.2 0 .4.3.2.5l-2.5 2.5a.5.5 0 01-.4.2H8c-.2 0-.4-.3-.2-.5l2.5-2.5zm11.7 4.2a.5.5 0 00-.4-.2H8c-.2 0-.4.3-.2.5l2.5 2.5a.5.5 0 00.4.2h13.6c.2 0 .4-.3.2-.5L22 15.8z" fill="#fff"/></svg>`,
+                'dogecoin': `<svg viewBox="0 0 32 32" class="w-8 h-8"><circle cx="16" cy="16" r="16" fill="#C3A634"/><path d="M13 10h3.5c3.3 0 6 2.7 6 6s-2.7 6-6 6H13V10zm2 2v8h1.5c2.2 0 4-1.8 4-4s-1.8-4-4-4H15zm-2 3h6v2h-6v-2z" fill="#fff"/></svg>`,
+                'usdt': `<svg viewBox="0 0 32 32" class="w-8 h-8"><circle cx="16" cy="16" r="16" fill="#26A17B"/><path d="M17.9 17.9v-2.4c3.3-.2 5.8-1 5.8-2s-2.5-1.8-5.8-2v-1.8h3.4V7.5H10.7v2.2h3.4v1.8c-3.3.2-5.8 1-5.8 2s2.5 1.8 5.8 2v5h3.8v-2.6zm-1.9-.5c-3.2 0-5.8-.8-5.8-1.7s2.6-1.7 5.8-1.7 5.8.8 5.8 1.7-2.6 1.7-5.8 1.7z" fill="#fff"/></svg>`,
+                'xrp': `<svg viewBox="0 0 32 32" class="w-8 h-8"><circle cx="16" cy="16" r="16" fill="#23292F"/><path d="M23.1 9h2.5l-5.4 5.2c-1.2 1.1-3.1 1.1-4.3 0L10.4 9h2.5l4 3.8c.6.6 1.5.6 2.1 0L23.1 9zM10.4 23l5.5-5.2c1.2-1.1 3.1-1.1 4.3 0l5.4 5.2h-2.5l-4-3.8c-.6-.6-1.5-.6-2.1 0l-4 3.8h-2.6z" fill="#fff"/></svg>`
+            };
+            return icons[iconName] || `<div class="w-8 h-8 bg-gray-600 rounded-full"></div>`;
+        }
+    };
+}
+
 window.api = api;
 window.checkAuth = checkAuth;
 window.requireAuth = requireAuth;
@@ -365,3 +517,4 @@ window.formatCurrency = formatCurrency;
 window.formatDate = formatDate;
 window.showNotification = showNotification;
 window.userData = userData;
+window.cryptoPayment = cryptoPayment;

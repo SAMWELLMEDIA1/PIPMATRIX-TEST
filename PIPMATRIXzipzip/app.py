@@ -1,15 +1,74 @@
 import os
+import io
+import base64
 from flask import Flask, request, jsonify, session, redirect, url_for, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Account, Transaction, Investment, Trade, Loan, CopyTrading, BotTrading, Referral, SupportTicket, Notification
 from datetime import datetime, timedelta
 import secrets
+import qrcode
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_pre_ping': True}
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+CRYPTO_WALLETS = {
+    'BTC': {
+        'address': 'bc1q8a07p9n6xlwvaare2a9dghtvtk5zd232ca55q0',
+        'network': 'Bitcoin',
+        'name': 'Bitcoin',
+        'symbol': 'BTC',
+        'icon': 'bitcoin'
+    },
+    'ETH': {
+        'address': '0x11722310395Dd27de946F5B87F79da16Ea2fdECe',
+        'network': 'Ethereum',
+        'name': 'Ethereum',
+        'symbol': 'ETH',
+        'icon': 'ethereum'
+    },
+    'BNB': {
+        'address': '0x11722310395Dd27de946F5B87F79da16Ea2fdECe',
+        'network': 'BNB Smart Chain',
+        'name': 'BNB',
+        'symbol': 'BNB',
+        'icon': 'bnb'
+    },
+    'SOL': {
+        'address': 'GdLjdGR6GWxPoYDvfvLbfAgNhNDMNE3B6sXCzrwHCT8r',
+        'network': 'Solana',
+        'name': 'Solana',
+        'symbol': 'SOL',
+        'icon': 'solana'
+    },
+    'DOGE': {
+        'address': 'DPN2z9snmiM7w3bqkHqRS8NJiYyHYE4Js8',
+        'network': 'Dogecoin',
+        'name': 'Dogecoin',
+        'symbol': 'DOGE',
+        'icon': 'dogecoin'
+    },
+    'USDT_TRC20': {
+        'address': 'TMWtrR9eAe1crQyyUoF1E9eZBaanxCDTs1',
+        'network': 'Tron (TRC20)',
+        'name': 'USDT',
+        'symbol': 'USDT',
+        'icon': 'usdt'
+    },
+    'XRP': {
+        'address': 'rUBFJqt1WCcYH88o7keaRV5CBoKAaA5AC',
+        'network': 'XRP Ledger',
+        'name': 'XRP',
+        'symbol': 'XRP',
+        'icon': 'xrp'
+    }
+}
 
 db.init_app(app)
 login_manager = LoginManager()
@@ -22,6 +81,17 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
+def generate_qr_code(data):
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffer = io.BytesIO()
+    img.save(buffer, format='PNG')
+    buffer.seek(0)
+    img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    return f"data:image/png;base64,{img_base64}"
+
 @app.route('/')
 def index():
     return send_from_directory('.', 'INDEX.html')
@@ -31,6 +101,10 @@ def serve_static(filename):
     if filename.endswith('.html'):
         return send_from_directory('.', filename)
     return send_from_directory('.', filename)
+
+@app.route('/uploads/<path:filename>')
+def serve_upload(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
@@ -221,12 +295,16 @@ def get_transactions():
     transactions = query.order_by(Transaction.created_at.desc()).paginate(page=page, per_page=per_page)
     
     return jsonify({
+        'success': True,
         'transactions': [{
             'id': t.id,
             'type': t.type,
             'amount': t.amount,
             'status': t.status,
             'payment_method': t.payment_method,
+            'crypto_type': t.crypto_type,
+            'crypto_network': t.crypto_network,
+            'txid': t.txid,
             'description': t.description,
             'created_at': t.created_at.isoformat(),
             'completed_at': t.completed_at.isoformat() if t.completed_at else None
@@ -234,6 +312,118 @@ def get_transactions():
         'total': transactions.total,
         'pages': transactions.pages,
         'current_page': page
+    })
+
+@app.route('/api/crypto/wallets', methods=['GET'])
+def get_crypto_wallets():
+    wallets = []
+    for key, wallet in CRYPTO_WALLETS.items():
+        qr_code = generate_qr_code(wallet['address'])
+        wallets.append({
+            'id': key,
+            'name': wallet['name'],
+            'symbol': wallet['symbol'],
+            'network': wallet['network'],
+            'address': wallet['address'],
+            'icon': wallet['icon'],
+            'qr_code': qr_code
+        })
+    return jsonify({'success': True, 'wallets': wallets})
+
+@app.route('/api/crypto/wallet/<crypto_id>', methods=['GET'])
+def get_crypto_wallet(crypto_id):
+    crypto_id = crypto_id.upper()
+    if crypto_id not in CRYPTO_WALLETS:
+        return jsonify({'success': False, 'message': 'Invalid cryptocurrency'}), 400
+    
+    wallet = CRYPTO_WALLETS[crypto_id]
+    qr_code = generate_qr_code(wallet['address'])
+    
+    return jsonify({
+        'success': True,
+        'wallet': {
+            'id': crypto_id,
+            'name': wallet['name'],
+            'symbol': wallet['symbol'],
+            'network': wallet['network'],
+            'address': wallet['address'],
+            'icon': wallet['icon'],
+            'qr_code': qr_code
+        }
+    })
+
+@app.route('/api/deposit/crypto', methods=['POST'])
+@login_required
+def create_crypto_deposit():
+    if 'receipt' in request.files:
+        receipt_file = request.files['receipt']
+        amount = request.form.get('amount', 0, type=float)
+        crypto_type = request.form.get('crypto_type', '')
+        txid = request.form.get('txid', '')
+    else:
+        data = request.get_json() or {}
+        amount = data.get('amount', 0)
+        crypto_type = data.get('crypto_type', '')
+        txid = data.get('txid', '')
+        receipt_file = None
+    
+    crypto_id = crypto_type.upper()
+    if crypto_id not in CRYPTO_WALLETS:
+        return jsonify({'success': False, 'message': 'Invalid cryptocurrency selected'}), 400
+    
+    if amount <= 0:
+        return jsonify({'success': False, 'message': 'Invalid amount'}), 400
+    
+    if not txid:
+        return jsonify({'success': False, 'message': 'Transaction hash (TXID) is required'}), 400
+    
+    wallet = CRYPTO_WALLETS[crypto_id]
+    
+    receipt_filename = None
+    if receipt_file and receipt_file.filename:
+        ext = receipt_file.filename.rsplit('.', 1)[-1].lower() if '.' in receipt_file.filename else 'png'
+        if ext not in ['jpg', 'jpeg', 'png', 'gif', 'pdf']:
+            return jsonify({'success': False, 'message': 'Invalid file type. Allowed: jpg, jpeg, png, gif, pdf'}), 400
+        
+        receipt_filename = f"{secrets.token_hex(16)}_{current_user.id}.{ext}"
+        receipt_file.save(os.path.join(UPLOAD_FOLDER, receipt_filename))
+    
+    transaction = Transaction(
+        user_id=current_user.id,
+        type='deposit',
+        amount=amount,
+        payment_method='crypto',
+        wallet_address=wallet['address'],
+        crypto_type=wallet['symbol'],
+        crypto_network=wallet['network'],
+        txid=txid,
+        receipt_filename=receipt_filename,
+        status='pending',
+        reference=f"DEP{secrets.token_hex(6).upper()}"
+    )
+    db.session.add(transaction)
+    
+    notification = Notification(
+        user_id=current_user.id,
+        title='Crypto Deposit Submitted',
+        message=f'Your deposit of ${amount:,.2f} via {wallet["name"]} ({wallet["network"]}) has been submitted. TXID: {txid[:20]}...',
+        type='info'
+    )
+    db.session.add(notification)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Deposit request submitted successfully. Please wait for confirmation.',
+        'reference': transaction.reference,
+        'transaction': {
+            'id': transaction.id,
+            'amount': transaction.amount,
+            'crypto_type': transaction.crypto_type,
+            'crypto_network': transaction.crypto_network,
+            'txid': transaction.txid,
+            'status': transaction.status
+        }
     })
 
 @app.route('/api/deposit', methods=['POST'])
@@ -689,46 +879,32 @@ def create_support_ticket():
 @login_required
 def get_referral():
     referral = Referral.query.filter_by(referrer_id=current_user.id).first()
-    referred_users = User.query.join(Referral, Referral.referred_user_id == User.id).filter(
-        Referral.referrer_id == current_user.id
-    ).all()
+    referred_users = Referral.query.filter_by(referrer_id=current_user.id).all()
     
     return jsonify({
         'referral_code': referral.referral_code if referral else None,
-        'total_bonus': referral.bonus_earned if referral else 0,
-        'referred_users': len(referred_users)
+        'total_referrals': len(referred_users),
+        'total_bonus': sum(r.bonus_earned for r in referred_users)
     })
-
-def create_notification(user_id, title, message, notification_type='info'):
-    notification = Notification(
-        user_id=user_id,
-        title=title,
-        message=message,
-        type=notification_type
-    )
-    db.session.add(notification)
-    return notification
-
-def get_time_ago(dt):
-    now = datetime.utcnow()
-    diff = now - dt
-    seconds = diff.total_seconds()
-    if seconds < 60:
-        return 'Just now'
-    elif seconds < 3600:
-        minutes = int(seconds / 60)
-        return f'{minutes} minute{"s" if minutes > 1 else ""} ago'
-    elif seconds < 86400:
-        hours = int(seconds / 3600)
-        return f'{hours} hour{"s" if hours > 1 else ""} ago'
-    else:
-        days = int(seconds / 86400)
-        return f'{days} day{"s" if days > 1 else ""} ago'
 
 @app.route('/api/notifications', methods=['GET'])
 @login_required
 def get_notifications():
-    notifications = Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).limit(50).all()
+    notifications = Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).limit(20).all()
+    
+    def time_ago(dt):
+        now = datetime.utcnow()
+        diff = now - dt
+        if diff.days > 0:
+            return f"{diff.days} day{'s' if diff.days > 1 else ''} ago"
+        elif diff.seconds >= 3600:
+            hours = diff.seconds // 3600
+            return f"{hours} hour{'s' if hours > 1 else ''} ago"
+        elif diff.seconds >= 60:
+            minutes = diff.seconds // 60
+            return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
+        else:
+            return "Just now"
     
     return jsonify({
         'success': True,
@@ -739,7 +915,7 @@ def get_notifications():
             'type': n.type,
             'read': n.read,
             'created_at': n.created_at.isoformat(),
-            'time_ago': get_time_ago(n.created_at)
+            'time_ago': time_ago(n.created_at)
         } for n in notifications]
     })
 
@@ -752,12 +928,5 @@ def mark_notification_read(notification_id):
         db.session.commit()
     return jsonify({'success': True})
 
-@app.route('/api/notifications/read-all', methods=['POST'])
-@login_required
-def mark_all_notifications_read():
-    Notification.query.filter_by(user_id=current_user.id, read=False).update({'read': True})
-    db.session.commit()
-    return jsonify({'success': True})
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)

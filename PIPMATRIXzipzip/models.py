@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     profile_image = db.Column(db.String(500))
     is_verified = db.Column(db.Boolean, default=False)
     is_premium = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
     
@@ -52,13 +53,18 @@ class Transaction(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    type = db.Column(db.String(50), nullable=False)  # deposit, withdrawal, transfer, trade
+    type = db.Column(db.String(50), nullable=False)
     amount = db.Column(db.Float, nullable=False)
-    status = db.Column(db.String(50), default='pending')  # pending, completed, failed, cancelled
+    status = db.Column(db.String(50), default='pending')
     payment_method = db.Column(db.String(100))
     wallet_address = db.Column(db.String(200))
     reference = db.Column(db.String(100))
     description = db.Column(db.Text)
+    crypto_type = db.Column(db.String(50))
+    crypto_network = db.Column(db.String(50))
+    txid = db.Column(db.String(200))
+    receipt_filename = db.Column(db.String(500))
+    admin_notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     completed_at = db.Column(db.DateTime)
 
@@ -68,12 +74,12 @@ class Investment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     plan_name = db.Column(db.String(100), nullable=False)
-    plan_type = db.Column(db.String(50))  # crypto, forex, stocks, real_estate
+    plan_type = db.Column(db.String(50))
     amount = db.Column(db.Float, nullable=False)
     expected_return = db.Column(db.Float)
     actual_return = db.Column(db.Float, default=0.0)
     duration_days = db.Column(db.Integer)
-    status = db.Column(db.String(50), default='active')  # active, completed, cancelled
+    status = db.Column(db.String(50), default='active')
     start_date = db.Column(db.DateTime, default=datetime.utcnow)
     end_date = db.Column(db.DateTime)
 
@@ -82,14 +88,14 @@ class Trade(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    symbol = db.Column(db.String(20), nullable=False)  # BTC/USD, EUR/USD, etc.
-    trade_type = db.Column(db.String(10), nullable=False)  # buy, sell
+    symbol = db.Column(db.String(20), nullable=False)
+    trade_type = db.Column(db.String(10), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     entry_price = db.Column(db.Float, nullable=False)
     exit_price = db.Column(db.Float)
     profit_loss = db.Column(db.Float, default=0.0)
     leverage = db.Column(db.Integer, default=1)
-    status = db.Column(db.String(50), default='open')  # open, closed, cancelled
+    status = db.Column(db.String(50), default='open')
     is_demo = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     closed_at = db.Column(db.DateTime)
@@ -105,7 +111,7 @@ class Loan(db.Model):
     monthly_payment = db.Column(db.Float)
     total_repayment = db.Column(db.Float)
     amount_paid = db.Column(db.Float, default=0.0)
-    status = db.Column(db.String(50), default='pending')  # pending, approved, rejected, active, completed
+    status = db.Column(db.String(50), default='pending')
     purpose = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     approved_at = db.Column(db.DateTime)
