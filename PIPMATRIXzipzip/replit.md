@@ -98,10 +98,16 @@ A full-stack trading platform built with Flask backend and HTML/Tailwind CSS fro
 - Updated PREMIUM.html with payment modal for subscription purchases
 - DEPOSIT.html now accepts URL parameters (crypto, source, amount, plan) for context-aware payment flows
 
-### Dashboard Fixes (December 11, 2025)
+### Dashboard & Demo Account Fixes (December 11, 2025)
 - Fixed Premium Signals navbar link - now correctly routes to PREMIUM.html instead of DASHBOARD.html
 - Updated demo account balance to $100,000 (originally requested value) - fixed in both Alpine getter and JavaScript initialization
 - Demo Trade and Live Trade sections are API-driven (no hardcoded dummy data)
+
+### DEMO.html Cleanup (December 11, 2025)
+- Removed all dummy statistics cards (Total Trades: 65, Win Rate: 52.31%, Total P&L: -$3,431.83, Active Trades: 0)
+- Updated demo account balance to $100,000.00 (was $85,872.36)
+- Fixed "Switch to Live Trading" button to route to DASHBOARD.html (was STOCK.html)
+- All demo features are now clean, with real trading data pulled from API only
 - Fixed Premium Signals navbar links across 18+ HTML files (corrected from DASHBOARD.html to PREMIUM.html)
 - Payment flow routes users directly to specific cryptocurrency deposit pages with context preserved
 
