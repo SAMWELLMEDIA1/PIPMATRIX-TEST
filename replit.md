@@ -45,6 +45,7 @@ Preferred communication style: Simple, everyday language.
 - **QR Code Generation**: Dynamic QR codes using Python qrcode library
 - **Wallet Addresses**: Hardcoded in backend (CRYPTO_WALLETS dictionary in app.py)
 - **Payment Flow**: User selects crypto → displays wallet + QR → user submits TXID + receipt → admin approval
+- **Bank Transfer**: Currently under maintenance with professional UI message directing users to cryptocurrency
 
 ### File Upload Handling
 - **Location**: `uploads/` directory
@@ -74,3 +75,21 @@ Preferred communication style: Simple, everyday language.
 
 ### External Services
 - **None currently integrated**: The platform is self-contained without third-party API integrations for trading data or payment processing
+
+## Recent Updates (December 11, 2025)
+
+### Comprehensive Crypto Payment System Implementation
+- **Rebuilt DEPOSIT.html** with 3-step crypto deposit flow: select cryptocurrency → enter amount & view wallet → submit transaction proof
+- **Dynamic QR Code Generation** for all 7 wallet addresses using server-side qrcode library
+- **7 Active Cryptocurrencies**:
+  - Bitcoin (BTC) - Segwit address
+  - Ethereum (ETH) - ERC20
+  - BNB - BNB Smart Chain
+  - Solana (SOL) - SPL token standard
+  - Dogecoin (DOGE) - Dogecoin network
+  - USDT - Tron (TRC20)
+  - XRP - XRP Ledger
+- **Enhanced Features**: Network display prevents wrong-chain deposits, TXID capture for tracking, optional receipt upload (JPG/PNG/GIF/PDF up to 10MB)
+- **Bank Transfer Option**: Added with professional "Under Maintenance" modal that directs users to cryptocurrency deposits
+- **Real Wallet Addresses**: All production wallet addresses configured (no placeholder data)
+- **Deposit History**: Real-time display of all user deposits with status tracking (pending/completed/failed)

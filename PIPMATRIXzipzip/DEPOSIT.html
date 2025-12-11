@@ -53,7 +53,7 @@
         .wallet-address { word-break: break-all; font-family: monospace; }
     </style>
 </head>
-<body x-data="{ ...userData(), ...cryptoPayment(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false }"
+<body x-data="{ ...userData(), ...cryptoPayment(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false, showBankModal: false, showBankMaintenance() { this.showBankModal = true; } }"
       x-init="init(); $nextTick(() => { if (typeof cryptoPayment === 'function') { Object.assign($data, cryptoPayment()); $data.init(); } })"
       :class="{ 'dark': darkMode }"
       class="dark text-gray-100 bg-gray-900" x-cloak>
@@ -89,7 +89,7 @@
                 Back to Dashboard
             </a>
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Deposit Funds</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-2">Fund your account using cryptocurrency</p>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">Choose your preferred payment method to fund your account</p>
         </div>
 
         <div class="flex items-center justify-center mb-8">
@@ -113,13 +113,29 @@
 
         <template x-if="step === 1">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Select Cryptocurrency</h2>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Select Payment Method</h2>
                 
                 <div x-show="loading" class="flex justify-center py-12">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
 
                 <div x-show="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <button @click="showBankMaintenance()"
+                            class="flex items-center p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-700/30 rounded-xl border-2 border-transparent hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 group relative overflow-hidden opacity-60">
+                        <div class="absolute inset-0 bg-gradient-to-r from-gray-300/20 to-transparent dark:from-gray-600/20 pointer-events-none"></div>
+                        <div class="flex-shrink-0 mr-4 relative z-10">
+                            <svg class="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h10m4 0a1 1 0 11-2 0 1 1 0 012 0zM7 15a1 1 0 11-2 0 1 1 0 012 0z" />
+                            </svg>
+                        </div>
+                        <div class="text-left relative z-10">
+                            <div class="font-semibold text-gray-700 dark:text-gray-400">Bank Transfer</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-500">Coming Soon</div>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-yellow-500/90 text-white text-xs font-semibold px-2 py-1 rounded-lg">MAINTENANCE</div>
+                        <i data-lucide="lock" class="w-5 h-5 ml-auto text-gray-400 dark:text-gray-500 group-hover:text-gray-500 relative z-10"></i>
+                    </button>
+
                     <template x-for="wallet in wallets" :key="wallet.id">
                         <button @click="selectCrypto(wallet)"
                                 class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-2 border-transparent hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 group">
@@ -371,6 +387,52 @@
                     <p>No deposit history yet</p>
                 </div>
             </template>
+        </div>
+    </div>
+</div>
+
+<!-- Bank Transfer Maintenance Modal -->
+<div x-show="showBankModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+     @click.self="showBankModal = false"
+     x-transition>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full transform transition-all"
+         x-show="showBankModal"
+         x-transition>
+        <div class="p-8">
+            <div class="flex items-center justify-center w-12 h-12 mx-auto bg-yellow-100 dark:bg-yellow-900/30 rounded-full mb-4">
+                <i data-lucide="wrench" class="w-6 h-6 text-yellow-600 dark:text-yellow-400"></i>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
+                Under Maintenance
+            </h3>
+            
+            <p class="text-gray-600 dark:text-gray-400 text-center mb-6">
+                Bank transfer deposits are currently under maintenance. We're working to enhance this service for you.
+            </p>
+            
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                <div class="flex items-start gap-3">
+                    <i data-lucide="lightbulb" class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <p class="text-sm font-medium text-blue-900 dark:text-blue-200 mb-1">Alternative Option</p>
+                        <p class="text-sm text-blue-800 dark:text-blue-300">
+                            You can deposit funds using cryptocurrency with instant confirmation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <button @click="showBankModal = false"
+                        class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200">
+                    Use Cryptocurrency Instead
+                </button>
+                <button @click="showBankModal = false"
+                        class="w-full py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200">
+                    Cancel
+                </button>
+            </div>
         </div>
     </div>
 </div>
