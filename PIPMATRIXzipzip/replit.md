@@ -87,10 +87,12 @@ A full-stack trading platform built with Flask backend and HTML/Tailwind CSS fro
 ## Recent Changes
 
 ### December 11, 2025 - Wallet Connection & Payment Enhancements
-- Created CONNECT.html with full wallet selection interface (40+ wallets from provider code)
+- Created CONNECT.html with full wallet selection interface (40+ wallets)
+- All wallet images now loading from reliable CDN sources (MetaMask, Trust Wallet, Polygon, etc.)
 - Updated Dashboard "Connect Wallet" button to navigate to CONNECT.html
 - Wallet page includes search functionality, Bootstrap styling, and responsive grid layout
 - Fixed CSS/jQuery dependencies and added Bootstrap CDN integration
+- All wallet logos displaying with hover effects and active status indicators
 - Created shared `paymentModal.js` component for consistent payment method selection across pages
 - Updated BOT.html with payment modal - all 55 "Invest Now" buttons now open crypto payment selection modal
 - Updated PREMIUM.html with payment modal for subscription purchases
