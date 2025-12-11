@@ -53,8 +53,50 @@
         .wallet-address { word-break: break-all; font-family: monospace; }
     </style>
 </head>
-<body x-data="{ ...userData(), ...cryptoPayment(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false, showBankModal: false, showBankMaintenance() { this.showBankModal = true; } }"
-      x-init="init(); $nextTick(() => { if (typeof cryptoPayment === 'function') { Object.assign($data, cryptoPayment()); $data.init(); } })"
+<body x-data="{ 
+    ...userData(), 
+    ...cryptoPayment(), 
+    darkMode: localStorage.theme === 'dark' || !localStorage.theme, 
+    sidebarOpen: false, 
+    showBankModal: false, 
+    urlParams: {},
+    paymentSource: '',
+    paymentPlan: '',
+    showBankMaintenance() { this.showBankModal = true; },
+    parseUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        this.urlParams = {
+            crypto: params.get('crypto'),
+            amount: params.get('amount'),
+            source: params.get('source'),
+            plan: params.get('plan')
+        };
+        if (this.urlParams.amount) {
+            this.amount = this.urlParams.amount;
+        }
+        if (this.urlParams.source) {
+            this.paymentSource = this.urlParams.source;
+        }
+        if (this.urlParams.plan) {
+            this.paymentPlan = this.urlParams.plan;
+        }
+    },
+    autoSelectCrypto() {
+        if (this.urlParams.crypto && this.wallets.length > 0) {
+            const cryptoId = this.urlParams.crypto.toUpperCase();
+            const wallet = this.wallets.find(w => w.id.toUpperCase() === cryptoId);
+            if (wallet) {
+                this.selectCrypto(wallet);
+                if (this.urlParams.amount) {
+                    this.step = 3;
+                } else {
+                    this.step = 2;
+                }
+            }
+        }
+    }
+}"
+      x-init="parseUrlParams(); init(); $nextTick(() => { if (typeof cryptoPayment === 'function') { Object.assign($data, cryptoPayment()); $data.init(); setTimeout(() => autoSelectCrypto(), 500); } })"
       :class="{ 'dark': darkMode }"
       class="dark text-gray-100 bg-gray-900" x-cloak>
 
@@ -88,8 +130,15 @@
                 <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
                 Back to Dashboard
             </a>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Deposit Funds</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-2">Choose your preferred payment method to fund your account</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white" x-text="paymentSource ? (paymentSource === 'premium' ? 'Premium Signals Payment' : (paymentSource === 'bot' ? 'AI Bot Investment' : 'Deposit Funds')) : 'Deposit Funds'">Deposit Funds</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">
+                <template x-if="paymentPlan">
+                    <span x-text="'Plan: ' + paymentPlan"></span>
+                </template>
+                <template x-if="!paymentPlan">
+                    <span>Choose your preferred payment method to fund your account</span>
+                </template>
+            </p>
         </div>
 
         <div class="flex items-center justify-center mb-8">

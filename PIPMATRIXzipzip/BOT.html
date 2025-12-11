@@ -127,8 +127,9 @@
 
 
 <script src="static/js/api.js"></script>
+<script src="static/js/paymentModal.js"></script>
 </head>
-<body x-data="{ ...userData(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false }"
+<body x-data="{ ...userData(), ...paymentModal(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false }"
       x-init="init()"
       :class="{ 'dark': darkMode }"
       class="dark text-gray-100 bg-gray-900" x-cloak>
@@ -1019,11 +1020,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/1"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1098,11 +1098,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/2"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1177,11 +1176,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/3"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1256,11 +1254,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/4"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1335,11 +1332,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/5"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1411,11 +1407,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/6"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1478,11 +1473,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/7"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1557,11 +1551,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/8"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1636,11 +1629,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/9"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1715,11 +1707,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/10"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1794,11 +1785,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/11"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1873,11 +1863,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/12"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -1952,11 +1941,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/13"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2031,11 +2019,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/14"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2110,11 +2097,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/15"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2186,11 +2172,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/16"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2265,11 +2250,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/17"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2344,11 +2328,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/18"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2423,11 +2406,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/19"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2502,11 +2484,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/20"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2581,11 +2562,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/21"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2660,11 +2640,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/22"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2739,11 +2718,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/23"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2818,11 +2796,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/24"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2897,11 +2874,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/25"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -2976,11 +2952,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/26"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3055,11 +3030,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/27"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3131,11 +3105,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/28"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3210,11 +3183,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/29"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3289,11 +3261,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/30"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3368,11 +3339,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/31"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3447,11 +3417,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/32"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3526,11 +3495,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/33"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3605,11 +3573,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/34"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3684,11 +3651,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/35"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3763,11 +3729,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/36"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3842,11 +3807,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/37"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -3921,11 +3885,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/38"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4000,11 +3963,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/39"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4076,11 +4038,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/40"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4155,11 +4116,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/41"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4234,11 +4194,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/42"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4313,11 +4272,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/43"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4392,11 +4350,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/44"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4471,11 +4428,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/45"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4550,11 +4506,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/46"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4629,11 +4584,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/47"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4708,11 +4662,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/48"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4787,11 +4740,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/49"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4866,11 +4818,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/50"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -4945,11 +4896,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/51"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -5021,11 +4971,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/52"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -5100,11 +5049,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/53"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -5179,11 +5127,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/54"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                                 <div class="bot-card group relative bg-white dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/20 dark:border-gray-700/30 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -5258,11 +5205,10 @@
                         
 
                         <!-- Action Button -->
-                        <a href="dashboard/bot-trading/55"
-                           class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
+                        <button @click="openPaymentModal({ source: 'bot', description: 'AI Bot Trading Investment', plan: 'AI Trading Bot' })" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-300 group">
                             <span>Invest Now</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
                             </div>
@@ -5745,5 +5691,89 @@ document.addEventListener('alpine:init', () => {
     };
 </script>
 <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
+
+<!-- Payment Method Selection Modal -->
+<div x-show="showPaymentModal" 
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+     @click.self="closePaymentModal()"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     style="display: none;">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+         x-show="showPaymentModal"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+        
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Select Payment Method</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" x-text="paymentContext?.description || 'Choose how you want to pay'"></p>
+                </div>
+                <button @click="closePaymentModal()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <template x-if="paymentContext?.amount">
+                <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-blue-700 dark:text-blue-300">Amount to Pay:</span>
+                        <span class="text-lg font-bold text-blue-900 dark:text-blue-100" x-text="'$' + parseFloat(paymentContext.amount).toLocaleString()"></span>
+                    </div>
+                </div>
+            </template>
+        </div>
+        
+        <div class="p-6">
+            <div class="grid grid-cols-1 gap-3">
+                <template x-for="method in paymentMethods" :key="method.id">
+                    <button @click="selectPaymentMethod(method)"
+                            class="flex items-center p-4 rounded-xl border-2 transition-all duration-200 group"
+                            :class="method.maintenance 
+                                ? 'bg-gray-50 dark:bg-gray-700/30 border-gray-200 dark:border-gray-700 opacity-60 hover:opacity-80' 
+                                : 'bg-gray-50 dark:bg-gray-700/50 border-transparent hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'">
+                        <div class="flex-shrink-0 mr-4" x-html="getPaymentIcon(method.icon)"></div>
+                        <div class="text-left flex-1">
+                            <div class="font-semibold text-gray-900 dark:text-white" x-text="method.name"></div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400" x-text="method.network"></div>
+                        </div>
+                        <template x-if="method.maintenance">
+                            <span class="px-2 py-1 text-xs font-semibold bg-yellow-500 text-white rounded-lg">MAINTENANCE</span>
+                        </template>
+                        <template x-if="!method.maintenance">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </template>
+                    </button>
+                </template>
+            </div>
+            
+            <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-medium text-amber-800 dark:text-amber-200">Secure Payment</p>
+                        <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">All cryptocurrency transactions are verified on the blockchain for maximum security.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
