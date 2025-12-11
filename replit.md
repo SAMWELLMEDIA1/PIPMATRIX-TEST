@@ -78,6 +78,19 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Updates (December 11, 2025)
 
+### Demo Trading System
+- **DEMO.html**: Demo dashboard with $100,000 virtual balance, "Start Demo Trade" button redirects to DEMO-START.html
+- **DEMO-START.html**: Full demo trading interface with:
+  - User data from API (name, initial) instead of dummy data
+  - Asset selection: 12 cryptocurrencies, 6 stocks, 3 forex pairs
+  - Trade configuration: amount ($1-$100,000), leverage (1x-100x), order type (buy/sell)
+  - Real-time trade summary: position size, max risk calculations
+  - Demo account reset functionality
+  - SweetAlert2 modals for trade execution and confirmation
+  - Mobile-responsive with bottom navigation bar
+  - Local navigation links (not external URLs)
+  - Green color scheme to differentiate from live trading (blue)
+
 ### Investment Pages Connected to Deposit Portal
 - **STOCK.html, CRYPTO.html, REALESTATE.html**: All "Invest" buttons now redirect to DEPOSIT.html with query parameters
 - **Query Parameters**: source (stock/crypto/realestate), plan (plan name), amount (investment amount)
