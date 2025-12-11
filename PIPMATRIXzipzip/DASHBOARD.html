@@ -198,7 +198,7 @@ function dashboardData() {
     },
     
     get demoBalance() {
-      return this.formatCurrency(10000);
+      return this.formatCurrency(100000);
     },
     
     get avatarInitials() {
@@ -740,7 +740,7 @@ function dashboardData() {
             <ul class="space-y-1">
                 <!---->
                 <li>
-                    <a href="DASHBOARD.html"
+                    <a href="PREMIUM.html"
                        class="group relative flex items-center px-3 py-2 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors duration-150 ">
                         <i data-lucide="zap" class="w-5 h-5 mr-3"></i>
                         Premium Signals
@@ -2781,7 +2781,7 @@ function dashboardData() {
             // Update account stats if displayed
             if (dashboard.account) {
                 const stats = {
-                    'demo_balance': '$' + (dashboard.account.demo_balance || 10000).toLocaleString(),
+                    'demo_balance': '$' + (dashboard.account.demo_balance || 100000).toLocaleString(),
                     'total_profit': '$' + (dashboard.account.total_profit || 0).toLocaleString(),
                     'total_deposits': '$' + (dashboard.account.total_deposits || 0).toLocaleString(),
                     'withdrawals': '$' + (dashboard.account.total_withdrawals || 0).toLocaleString(),

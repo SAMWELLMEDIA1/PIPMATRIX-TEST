@@ -97,6 +97,11 @@ A full-stack trading platform built with Flask backend and HTML/Tailwind CSS fro
 - Updated BOT.html with payment modal - all 55 "Invest Now" buttons now open crypto payment selection modal
 - Updated PREMIUM.html with payment modal for subscription purchases
 - DEPOSIT.html now accepts URL parameters (crypto, source, amount, plan) for context-aware payment flows
+
+### Dashboard Fixes (December 11, 2025)
+- Fixed Premium Signals navbar link - now correctly routes to PREMIUM.html instead of DASHBOARD.html
+- Updated demo account balance to $100,000 (originally requested value) - fixed in both Alpine getter and JavaScript initialization
+- Demo Trade and Live Trade sections are API-driven (no hardcoded dummy data)
 - Fixed Premium Signals navbar links across 18+ HTML files (corrected from DASHBOARD.html to PREMIUM.html)
 - Payment flow routes users directly to specific cryptocurrency deposit pages with context preserved
 
