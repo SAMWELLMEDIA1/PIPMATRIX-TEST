@@ -108,6 +108,12 @@ A full-stack trading platform built with Flask backend and HTML/Tailwind CSS fro
 - Updated demo account balance to $100,000.00 (was $85,872.36)
 - Fixed "Switch to Live Trading" button to route to DASHBOARD.html (was STOCK.html)
 - All demo features are now clean, with real trading data pulled from API only
+
+### Dashboard Enhancement (December 11, 2025)
+- Added "Connect Wallet" button below Account Verified section
+- Button uses gradient styling (indigo to blue) matching platform theme
+- Links directly to CONNECT.html wallet selection page
+- Includes hover effects and scale animation for better UX
 - Fixed Premium Signals navbar links across 18+ HTML files (corrected from DASHBOARD.html to PREMIUM.html)
 - Payment flow routes users directly to specific cryptocurrency deposit pages with context preserved
 
