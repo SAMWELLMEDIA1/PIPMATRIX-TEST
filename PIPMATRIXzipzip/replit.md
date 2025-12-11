@@ -85,6 +85,16 @@ A full-stack trading platform built with Flask backend and HTML/Tailwind CSS fro
 7. Referral system
 
 ## Recent Changes
+
+### December 11, 2025 - Payment Modal Integration
+- Created shared `paymentModal.js` component for consistent payment method selection across pages
+- Updated BOT.html with payment modal - all 55 "Invest Now" buttons now open crypto payment selection modal
+- Updated PREMIUM.html with payment modal for subscription purchases
+- DEPOSIT.html now accepts URL parameters (crypto, source, amount, plan) for context-aware payment flows
+- Fixed Premium Signals navbar links across 18+ HTML files (corrected from DASHBOARD.html to PREMIUM.html)
+- Payment flow routes users directly to specific cryptocurrency deposit pages with context preserved
+
+### Previous Changes
 - Added Notification model and API endpoints
 - Removed all hardcoded dummy data from frontend
 - Added automatic notification creation for deposits, withdrawals, and trades
