@@ -1142,7 +1142,8 @@
 
                             <!-- Submit Button -->
                             <button
-                                type="submit"
+                                type="button"
+                                @click="goToDeposit('Crypto Starter Plan', amount)"
                                 class="w-full relative py-3 px-6 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-900 group"
                                 @mouseenter="selectedPlan = 0"
                             >
@@ -1313,7 +1314,8 @@
 
                             <!-- Submit Button -->
                             <button
-                                type="submit"
+                                type="button"
+                                @click="goToDeposit('Crypto Growth Plan', amount)"
                                 class="w-full relative py-3 px-6 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-900 group"
                                 @mouseenter="selectedPlan = 1"
                             >
@@ -1484,7 +1486,8 @@
 
                             <!-- Submit Button -->
                             <button
-                                type="submit"
+                                type="button"
+                                @click="goToDeposit('Crypto Basic Plan', amount)"
                                 class="w-full relative py-3 px-6 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-900 group"
                                 @mouseenter="selectedPlan = 2"
                             >
@@ -1667,7 +1670,8 @@
 
                             <!-- Submit Button -->
                             <button
-                                type="submit"
+                                type="button"
+                                @click="goToDeposit('Crypto Standard Plan', amount)"
                                 class="w-full relative py-3 px-6 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-900 group"
                                 @mouseenter="selectedPlan = 3"
                             >
@@ -1850,7 +1854,8 @@
 
                             <!-- Submit Button -->
                             <button
-                                type="submit"
+                                type="button"
+                                @click="goToDeposit('Crypto Premium Plan', amount)"
                                 class="w-full relative py-3 px-6 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-900 group"
                                 @mouseenter="selectedPlan = 4"
                             >
@@ -2033,7 +2038,8 @@
 
                             <!-- Submit Button -->
                             <button
-                                type="submit"
+                                type="button"
+                                @click="goToDeposit('Crypto Elite Plan', amount)"
                                 class="w-full relative py-3 px-6 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-900 group"
                                 @mouseenter="selectedPlan = 5"
                             >
@@ -2176,6 +2182,11 @@
 
 <!-- Alpine.js Initialization -->
 <script>
+    function goToDeposit(planName, amount) {
+        const url = `DEPOSIT.html?source=crypto&plan=${encodeURIComponent(planName)}&amount=${amount}`;
+        window.location.href = url;
+    }
+    
     document.addEventListener('alpine:init', () => {
         Alpine.data('cryptoPlans', () => ({
             selectedPlan: null,
