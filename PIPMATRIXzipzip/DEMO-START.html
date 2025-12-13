@@ -115,8 +115,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="static/js/api.js"></script>
 </head>
-<body x-data="{ ...userData(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false, demoBalance: 100000 }"
-      x-init="init()"
+<body x-data="{ ...userData(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false, demoBalance: 10000, openTrades: [], activeTrade: null }"
+      x-init="init(); loadDemoBalance();"
       :class="{ 'dark': darkMode }"
       class="dark text-gray-100 bg-gray-900" x-cloak>
     <style>
@@ -706,11 +706,28 @@
         });
     });
 
-    function executeDemoTrade() {
-        const asset = document.getElementById('asset').value;
+    async function loadDemoBalance() {
+        try {
+            const response = await fetch('/api/demo/balance');
+            const data = await response.json();
+            if (data.success) {
+                const alpineData = Alpine.$data(document.body);
+                alpineData.demoBalance = data.demo_balance;
+            }
+        } catch (error) {
+            console.error('Error loading demo balance:', error);
+        }
+    }
+
+    async function executeDemoTrade() {
+        const assetSelect = document.getElementById('asset');
+        const asset = assetSelect.value;
+        const selectedOption = assetSelect.options[assetSelect.selectedIndex];
+        const entryPrice = parseFloat(selectedOption.dataset.price) || 0;
         const amount = parseFloat(document.getElementById('amount').value);
-        const leverage = document.getElementById('leverage').value;
+        const leverage = parseInt(document.getElementById('leverage').value);
         const orderType = document.querySelector('input[name="order_type"]:checked').value;
+        const alpineData = Alpine.$data(document.body);
 
         if (!asset) {
             Swal.fire({
@@ -734,45 +751,147 @@
             return;
         }
 
-        if (amount > 100000) {
+        if (amount > alpineData.demoBalance) {
             Swal.fire({
                 icon: 'error',
-                title: 'Amount Exceeded',
-                text: 'Amount exceeds your demo balance of $100,000.00',
+                title: 'Insufficient Balance',
+                text: `Amount exceeds your demo balance of $${alpineData.demoBalance.toLocaleString()}`,
                 background: '#1f2937',
                 color: '#fff'
             });
             return;
         }
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Demo Trade Executed!',
-            html: `
-                <div class="text-left space-y-2">
-                    <p><strong>Asset:</strong> ${asset}</p>
-                    <p><strong>Amount:</strong> $${amount.toLocaleString()}</p>
-                    <p><strong>Leverage:</strong> ${leverage}x</p>
-                    <p><strong>Type:</strong> ${orderType === 'buy' ? 'Buy / Long' : 'Sell / Short'}</p>
-                    <p><strong>Position Size:</strong> $${(amount * parseInt(leverage)).toLocaleString()}</p>
-                </div>
-                <p class="mt-4 text-sm text-gray-400">This is a demo trade with virtual money.</p>
-            `,
-            background: '#1f2937',
-            color: '#fff',
-            confirmButtonColor: '#10b981',
-            confirmButtonText: 'View Position'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = 'DEMO.html';
+        try {
+            const response = await fetch('/api/demo/trade', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    symbol: asset,
+                    trade_type: orderType,
+                    amount: amount,
+                    entry_price: entryPrice,
+                    leverage: leverage,
+                    expiry_seconds: 60
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                alpineData.demoBalance = data.new_balance;
+                
+                let timerInterval;
+                let timeLeft = 60;
+                
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Demo Trade Active!',
+                    html: `
+                        <div class="text-left space-y-2 mb-4">
+                            <p><strong>Asset:</strong> ${asset}</p>
+                            <p><strong>Entry Price:</strong> $${entryPrice.toLocaleString()}</p>
+                            <p><strong>Amount:</strong> $${amount.toLocaleString()}</p>
+                            <p><strong>Leverage:</strong> ${leverage}x</p>
+                            <p><strong>Type:</strong> ${orderType === 'buy' ? 'Buy / Long' : 'Sell / Short'}</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-yellow-400" id="countdown">60s</div>
+                            <p class="text-sm text-gray-400">Trade expires in...</p>
+                        </div>
+                    `,
+                    background: '#1f2937',
+                    color: '#fff',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        timerInterval = setInterval(() => {
+                            timeLeft--;
+                            const countdownEl = document.getElementById('countdown');
+                            if (countdownEl) {
+                                countdownEl.textContent = timeLeft + 's';
+                            }
+                            if (timeLeft <= 0) {
+                                clearInterval(timerInterval);
+                                closeTrade(data.trade_id, entryPrice, asset, amount, leverage, orderType);
+                            }
+                        }, 1000);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Trade Failed',
+                    text: data.message || 'Failed to place trade',
+                    background: '#1f2937',
+                    color: '#fff'
+                });
             }
-        });
+        } catch (error) {
+            console.error('Error placing trade:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to place demo trade. Please try again.',
+                background: '#1f2937',
+                color: '#fff'
+            });
+        }
     }
 
-    function resetDemoAccount() {
-        Swal.fire({
+    async function closeTrade(tradeId, entryPrice, asset, amount, leverage, orderType) {
+        const priceChange = (Math.random() - 0.5) * 0.02;
+        const exitPrice = entryPrice * (1 + priceChange);
+        
+        try {
+            const response = await fetch(`/api/demo/trade/${tradeId}/close`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ exit_price: exitPrice })
+            });
+
+            const data = await response.json();
+            const alpineData = Alpine.$data(document.body);
+            
+            if (data.success) {
+                alpineData.demoBalance = data.new_balance;
+                
+                const isWin = data.profit_loss > 0;
+                const profitLoss = Math.abs(data.profit_loss);
+                
+                Swal.fire({
+                    icon: isWin ? 'success' : 'error',
+                    title: isWin ? 'Trade Won!' : 'Trade Lost',
+                    html: `
+                        <div class="text-left space-y-2">
+                            <p><strong>Asset:</strong> ${asset}</p>
+                            <p><strong>Entry:</strong> $${entryPrice.toFixed(2)}</p>
+                            <p><strong>Exit:</strong> $${exitPrice.toFixed(2)}</p>
+                            <p><strong>${isWin ? 'Profit' : 'Loss'}:</strong> <span class="${isWin ? 'text-green-400' : 'text-red-400'}">$${profitLoss.toFixed(2)}</span></p>
+                        </div>
+                        <div class="mt-4 p-3 bg-gray-800 rounded-lg">
+                            <p class="text-sm text-gray-400">New Balance</p>
+                            <p class="text-xl font-bold text-white">$${data.new_balance.toFixed(2)}</p>
+                        </div>
+                    `,
+                    background: '#1f2937',
+                    color: '#fff',
+                    confirmButtonColor: isWin ? '#10b981' : '#ef4444',
+                    confirmButtonText: 'Continue Trading'
+                });
+            }
+        } catch (error) {
+            console.error('Error closing trade:', error);
+        }
+    }
+
+    async function resetDemoAccount() {
+        const result = await Swal.fire({
             title: 'Reset Demo Account?',
-            text: 'This will reset your demo balance to $100,000 and close all positions.',
+            text: 'This will reset your demo balance to $10,000 and cancel all open positions.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#f97316',
@@ -780,18 +899,41 @@
             confirmButtonText: 'Yes, reset it!',
             background: '#1f2937',
             color: '#fff'
-        }).then((result) => {
-            if (result.isConfirmed) {
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch('/api/demo/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const alpineData = Alpine.$data(document.body);
+                    alpineData.demoBalance = 10000;
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Account Reset!',
+                        text: 'Your demo balance has been reset to $10,000.',
+                        background: '#1f2937',
+                        color: '#fff',
+                        confirmButtonColor: '#10b981'
+                    });
+                }
+            } catch (error) {
+                console.error('Error resetting account:', error);
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Account Reset!',
-                    text: 'Your demo balance has been reset to $100,000.',
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to reset demo account. Please try again.',
                     background: '#1f2937',
-                    color: '#fff',
-                    confirmButtonColor: '#10b981'
+                    color: '#fff'
                 });
             }
-        });
+        }
     }
 
     function cryptoPrices() {

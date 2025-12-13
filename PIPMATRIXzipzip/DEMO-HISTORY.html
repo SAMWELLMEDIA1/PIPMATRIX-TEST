@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: localStorage.getItem('theme') === 'light' ? false : true }"
+      :class="{ 'dark': darkMode }"
+      class="dark bg-gray-900">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Trade History - Pip Matrix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="images/LOGO.jpeg" rel="icon" type="image/x-icon" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="static/js/api.js"></script>
+</head>
+<body x-data="{ 
+    ...userData(), 
+    darkMode: localStorage.theme === 'dark' || !localStorage.theme, 
+    sidebarOpen: false, 
+    demoBalance: 10000,
+    trades: [],
+    stats: { total_trades: 0, wins: 0, losses: 0, total_profit: 0, total_loss: 0, net_pnl: 0, win_rate: 0 },
+    loading: true
+}"
+      x-init="init(); loadHistory();"
+      :class="{ 'dark': darkMode }"
+      class="dark text-gray-100 bg-gray-900" x-cloak>
+    <style>
+        body { overflow-x: hidden; }
+        [x-cloak] { display: none !important; }
+    </style>
+
+<nav class="bg-white/98 dark:bg-gray-900/98 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center space-x-4">
+                <a href="DEMO.html" class="flex items-center space-x-3 group">
+                    <img src="images/LOGO.jpeg" class="h-8 w-auto" alt="Logo" />
+                    <span class="text-lg font-bold text-gray-900 dark:text-white">Pip Matrix</span>
+                </a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-green-100 dark:bg-green-900/30 px-4 py-2 rounded-lg">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Demo Balance</span>
+                    <div class="text-lg font-bold text-green-600 dark:text-green-400" x-text="'$' + demoBalance.toLocaleString(undefined, {minimumFractionDigits: 2})">$10,000.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Demo Trade History</h1>
+            <p class="mt-1 text-gray-600 dark:text-gray-400">View your completed demo trades and performance</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="DEMO-START.html" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                <i data-lucide="plus" class="w-4 h-4"></i> New Trade
+            </a>
+            <a href="DEMO.html" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Total Trades</div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white" x-text="stats.total_trades">0</div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Win Rate</div>
+            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" x-text="stats.win_rate.toFixed(1) + '%'">0%</div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Total Profit</div>
+            <div class="text-2xl font-bold text-green-600 dark:text-green-400" x-text="'$' + stats.total_profit.toFixed(2)">$0.00</div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Net P&L</div>
+            <div class="text-2xl font-bold" :class="stats.net_pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'" x-text="(stats.net_pnl >= 0 ? '+$' : '-$') + Math.abs(stats.net_pnl).toFixed(2)">$0.00</div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Trade History</h2>
+        </div>
+        
+        <div x-show="loading" class="p-8 text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"></div>
+            <p class="mt-2 text-gray-500 dark:text-gray-400">Loading trades...</p>
+        </div>
+
+        <div x-show="!loading && trades.length === 0" class="p-8 text-center">
+            <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-3"></i>
+            <p class="text-gray-500 dark:text-gray-400">No demo trades yet. Start trading to see your history!</p>
+            <a href="DEMO-START.html" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                <i data-lucide="play" class="w-4 h-4"></i> Start Demo Trade
+            </a>
+        </div>
+
+        <div x-show="!loading && trades.length > 0" class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asset</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Entry</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Exit</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Leverage</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Result</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">P&L</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <template x-for="trade in trades" :key="trade.id">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="font-medium text-gray-900 dark:text-white" x-text="trade.symbol"></span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full"
+                                      :class="trade.trade_type === 'buy' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'"
+                                      x-text="trade.trade_type === 'buy' ? 'BUY' : 'SELL'"></span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-900 dark:text-white" x-text="'$' + trade.amount.toFixed(2)"></td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600 dark:text-gray-400" x-text="'$' + trade.entry_price.toFixed(2)"></td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600 dark:text-gray-400" x-text="trade.exit_price ? '$' + trade.exit_price.toFixed(2) : '-'"></td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-600 dark:text-gray-400" x-text="trade.leverage + 'x'"></td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-bold rounded-full"
+                                      :class="trade.result === 'win' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'"
+                                      x-text="trade.result === 'win' ? 'WIN' : 'LOSS'"></span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap font-medium"
+                                :class="trade.profit_loss >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+                                x-text="(trade.profit_loss >= 0 ? '+$' : '-$') + Math.abs(trade.profit_loss).toFixed(2)"></td>
+                            <td class="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-gray-400 text-sm" x-text="new Date(trade.closed_at).toLocaleDateString()"></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="fixed bottom-0 w-full z-30 md:hidden">
+    <div class="flex justify-between items-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg px-6 py-4 shadow-lg border-t border-gray-200 dark:border-gray-700">
+        <a href="DEMO.html" class="flex flex-col items-center text-gray-500 hover:text-blue-600">
+            <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+            <span class="text-xs mt-1">Demo</span>
+        </a>
+        <a href="DEMO-START.html" class="flex flex-col items-center text-gray-500 hover:text-green-600">
+            <i data-lucide="play" class="w-6 h-6"></i>
+            <span class="text-xs mt-1">Trade</span>
+        </a>
+        <a href="DEMO-HISTORY.html" class="flex flex-col items-center text-blue-600">
+            <i data-lucide="history" class="w-6 h-6"></i>
+            <span class="text-xs mt-1">History</span>
+        </a>
+        <a href="DASHBOARD.html" class="flex flex-col items-center text-gray-500 hover:text-blue-600">
+            <i data-lucide="home" class="w-6 h-6"></i>
+            <span class="text-xs mt-1">Home</span>
+        </a>
+    </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+});
+
+async function loadHistory() {
+    const alpineData = Alpine.$data(document.body);
+    
+    try {
+        const [balanceRes, historyRes] = await Promise.all([
+            fetch('/api/demo/balance'),
+            fetch('/api/demo/history')
+        ]);
+        
+        const balanceData = await balanceRes.json();
+        const historyData = await historyRes.json();
+        
+        if (balanceData.success) {
+            alpineData.demoBalance = balanceData.demo_balance;
+        }
+        
+        if (historyData.success) {
+            alpineData.trades = historyData.trades;
+            alpineData.stats = historyData.stats;
+        }
+    } catch (error) {
+        console.error('Error loading history:', error);
+    }
+    
+    alpineData.loading = false;
+    setTimeout(() => lucide.createIcons(), 100);
+}
+</script>
+</body>
+</html>

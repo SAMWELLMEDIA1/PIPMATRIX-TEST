@@ -9,7 +9,7 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://remedyalgotradescript.sbs/storage/app/public/photos/Px9MifdF6k4uRiyRSGBX6qi4kKWtbhpkYNQrAouw.png" rel="icon" type="image/x-icon" />
+<link href="images/LOGO.jpeg" rel="icon" type="image/x-icon" />
     <!-- Inter Font -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -128,8 +128,8 @@
 
 <script src="static/js/api.js"></script>
 </head>
-<body x-data="{ ...userData(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false }"
-      x-init="init()"
+<body x-data="{ ...userData(), darkMode: localStorage.theme === 'dark' || !localStorage.theme, sidebarOpen: false, demoBalance: 10000 }"
+      x-init="init(); loadDemoBalance();"
       :class="{ 'dark': darkMode }"
       class="dark text-gray-100 bg-gray-900" x-cloak>
       <style>
@@ -939,8 +939,8 @@
                         <!-- Balance Display -->
                         <div class="mb-3">
                             <div class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white mb-1 tracking-tight break-all">
-                                <span class="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
-                                    $100,000.00
+                                <span class="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent" x-text="'$' + demoBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})">
+                                    $10,000.00
                                 </span>
                             </div>
                             <p class="text-gray-400 text-sm sm:text-base lg:text-lg font-medium">Virtual Trading Balance</p>
@@ -970,14 +970,12 @@
                             <span class="sm:hidden">Live Trading</span>
                         </a>
 
-                        <form action="demo/reset" method="POST" class="w-full sm:w-auto" onsubmit="return confirm('Are you sure you want to reset your demo account? This will close all active trades and reset your balance to $100,000.')">
-                            <input type="hidden" name="_token" value="NGvdzBA28ebfgDOTp2UAwymDBT2P4HQin3eXTGcr">                            <button type="submit"
-                                    class="group inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm text-gray-300 hover:text-white rounded-lg sm:rounded-xl font-medium sm:font-semibold transition-all duration-200 border border-gray-700/50 hover:border-gray-600/50 shadow-lg w-full sm:w-auto text-sm sm:text-base">
-                                <i data-lucide="refresh-cw" class="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-180 transition-transform duration-300"></i>
-                                <span class="hidden sm:inline">Reset Account</span>
-                                <span class="sm:hidden">Reset</span>
-                            </button>
-                        </form>
+                        <button type="button" @click="resetDemoAccount()"
+                                class="group inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-6 sm:py-3 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm text-gray-300 hover:text-white rounded-lg sm:rounded-xl font-medium sm:font-semibold transition-all duration-200 border border-gray-700/50 hover:border-gray-600/50 shadow-lg w-full sm:w-auto text-sm sm:text-base">
+                            <i data-lucide="refresh-cw" class="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-180 transition-transform duration-300"></i>
+                            <span class="hidden sm:inline">Reset Account</span>
+                            <span class="sm:hidden">Reset</span>
+                        </button>
                     </div>
                 </div>
 
@@ -1396,6 +1394,63 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<!-- Demo Balance API -->
+<script>
+async function loadDemoBalance() {
+    try {
+        const response = await fetch('/api/demo/balance');
+        const data = await response.json();
+        if (data.success) {
+            const alpineData = Alpine.$data(document.body);
+            alpineData.demoBalance = data.demo_balance;
+        }
+    } catch (error) {
+        console.error('Error loading demo balance:', error);
+    }
+}
+
+async function resetDemoAccount() {
+    const result = await Swal.fire({
+        title: 'Reset Demo Account?',
+        text: 'This will reset your demo balance to $10,000 and cancel all open positions.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f97316',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, reset it!',
+        background: '#1f2937',
+        color: '#fff'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const response = await fetch('/api/demo/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                const alpineData = Alpine.$data(document.body);
+                alpineData.demoBalance = 10000;
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Reset!',
+                    text: 'Your demo balance has been reset to $10,000.',
+                    background: '#1f2937',
+                    color: '#fff',
+                    confirmButtonColor: '#10b981'
+                });
+            }
+        } catch (error) {
+            console.error('Error resetting account:', error);
+        }
+    }
+}
+</script>
 
 <!-- Live Crypto Prices Script -->
 <script>

@@ -928,5 +928,193 @@ def mark_notification_read(notification_id):
         db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/api/demo/balance', methods=['GET'])
+@login_required
+def get_demo_balance():
+    account = Account.query.filter_by(user_id=current_user.id).first()
+    if not account:
+        account = Account(user_id=current_user.id, demo_balance=10000.0)
+        db.session.add(account)
+        db.session.commit()
+    
+    open_trades = Trade.query.filter_by(user_id=current_user.id, is_demo=True, status='open').all()
+    open_trades_value = sum(t.amount for t in open_trades)
+    
+    return jsonify({
+        'success': True,
+        'demo_balance': account.demo_balance,
+        'open_trades_count': len(open_trades),
+        'open_trades_value': open_trades_value
+    })
+
+@app.route('/api/demo/trade', methods=['POST'])
+@login_required
+def place_demo_trade():
+    data = request.get_json()
+    
+    symbol = data.get('symbol')
+    trade_type = data.get('trade_type', 'buy')
+    amount = float(data.get('amount', 0))
+    entry_price = float(data.get('entry_price', 0))
+    leverage = int(data.get('leverage', 1))
+    expiry_seconds = int(data.get('expiry_seconds', 60))
+    
+    if not symbol or amount <= 0 or entry_price <= 0:
+        return jsonify({'success': False, 'message': 'Invalid trade parameters'}), 400
+    
+    account = Account.query.filter_by(user_id=current_user.id).first()
+    if not account:
+        account = Account(user_id=current_user.id, demo_balance=10000.0)
+        db.session.add(account)
+        db.session.commit()
+    
+    if amount > account.demo_balance:
+        return jsonify({'success': False, 'message': 'Insufficient demo balance'}), 400
+    
+    account.demo_balance -= amount
+    
+    trade = Trade(
+        user_id=current_user.id,
+        symbol=symbol,
+        trade_type=trade_type,
+        amount=amount,
+        entry_price=entry_price,
+        leverage=leverage,
+        status='open',
+        is_demo=True
+    )
+    
+    db.session.add(trade)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Demo trade placed successfully',
+        'trade_id': trade.id,
+        'new_balance': account.demo_balance,
+        'expiry_seconds': expiry_seconds
+    })
+
+@app.route('/api/demo/trade/<int:trade_id>/close', methods=['POST'])
+@login_required
+def close_demo_trade(trade_id):
+    data = request.get_json()
+    exit_price = float(data.get('exit_price', 0))
+    
+    trade = Trade.query.filter_by(id=trade_id, user_id=current_user.id, is_demo=True).first()
+    if not trade:
+        return jsonify({'success': False, 'message': 'Trade not found'}), 404
+    
+    if trade.status != 'open':
+        return jsonify({'success': False, 'message': 'Trade already closed'}), 400
+    
+    account = Account.query.filter_by(user_id=current_user.id).first()
+    
+    price_change_percent = ((exit_price - trade.entry_price) / trade.entry_price) * 100
+    
+    if trade.trade_type == 'sell':
+        price_change_percent = -price_change_percent
+    
+    leveraged_change = price_change_percent * trade.leverage
+    profit_loss = (trade.amount * leveraged_change) / 100
+    
+    if profit_loss > trade.amount:
+        profit_loss = trade.amount * 0.85
+    elif profit_loss < -trade.amount:
+        profit_loss = -trade.amount
+    
+    trade.exit_price = exit_price
+    trade.profit_loss = profit_loss
+    trade.status = 'closed'
+    trade.closed_at = datetime.utcnow()
+    
+    final_return = trade.amount + profit_loss
+    if final_return > 0:
+        account.demo_balance += final_return
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Trade closed',
+        'profit_loss': profit_loss,
+        'result': 'win' if profit_loss > 0 else 'loss',
+        'new_balance': account.demo_balance
+    })
+
+@app.route('/api/demo/trades/open', methods=['GET'])
+@login_required
+def get_open_demo_trades():
+    trades = Trade.query.filter_by(user_id=current_user.id, is_demo=True, status='open').order_by(Trade.created_at.desc()).all()
+    
+    return jsonify({
+        'success': True,
+        'trades': [{
+            'id': t.id,
+            'symbol': t.symbol,
+            'trade_type': t.trade_type,
+            'amount': t.amount,
+            'entry_price': t.entry_price,
+            'leverage': t.leverage,
+            'created_at': t.created_at.isoformat()
+        } for t in trades]
+    })
+
+@app.route('/api/demo/history', methods=['GET'])
+@login_required
+def get_demo_history():
+    trades = Trade.query.filter_by(user_id=current_user.id, is_demo=True, status='closed').order_by(Trade.closed_at.desc()).limit(50).all()
+    
+    total_profit = sum(t.profit_loss for t in trades if t.profit_loss > 0)
+    total_loss = sum(abs(t.profit_loss) for t in trades if t.profit_loss < 0)
+    win_count = sum(1 for t in trades if t.profit_loss > 0)
+    loss_count = sum(1 for t in trades if t.profit_loss <= 0)
+    
+    return jsonify({
+        'success': True,
+        'trades': [{
+            'id': t.id,
+            'symbol': t.symbol,
+            'trade_type': t.trade_type,
+            'amount': t.amount,
+            'entry_price': t.entry_price,
+            'exit_price': t.exit_price,
+            'profit_loss': t.profit_loss,
+            'leverage': t.leverage,
+            'result': 'win' if t.profit_loss > 0 else 'loss',
+            'created_at': t.created_at.isoformat(),
+            'closed_at': t.closed_at.isoformat() if t.closed_at else None
+        } for t in trades],
+        'stats': {
+            'total_trades': len(trades),
+            'wins': win_count,
+            'losses': loss_count,
+            'total_profit': total_profit,
+            'total_loss': total_loss,
+            'net_pnl': total_profit - total_loss,
+            'win_rate': (win_count / len(trades) * 100) if trades else 0
+        }
+    })
+
+@app.route('/api/demo/reset', methods=['POST'])
+@login_required
+def reset_demo_account():
+    account = Account.query.filter_by(user_id=current_user.id).first()
+    if not account:
+        account = Account(user_id=current_user.id)
+        db.session.add(account)
+    
+    account.demo_balance = 10000.0
+    
+    Trade.query.filter_by(user_id=current_user.id, is_demo=True, status='open').update({'status': 'cancelled'})
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Demo account reset successfully',
+        'new_balance': 10000.0
+    })
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
