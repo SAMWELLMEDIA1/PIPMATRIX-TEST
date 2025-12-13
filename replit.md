@@ -119,6 +119,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Updates (December 13, 2025)
 
+### Dashboard Data & UI Improvements
+- **Real Data Integration**: Dashboard now uses Alpine.js bindings for all financial metrics:
+  - Account Balance: `x-text="balance"`
+  - Total Profit: `x-text="totalProfit"`
+  - Total Deposits: `x-text="totalDeposits"`
+  - Total Withdrawals: `x-text="totalWithdrawals"`
+  - Earnings: `x-text="totalProfit"` (renamed from "Bonus")
+- **Removed Hardcoded Values**: Eliminated fake BTC balance display and all static dollar amounts
+- **Logo Size Updates**: All navbar logos updated from `h-8 w-auto` to `h-10 sm:h-12 w-auto` for better visibility and responsive sizing
+- **Live Trading Validation**: Backend properly validates balance before trades (app.py lines 631-633)
+
 ### Demo Trading Improvements
 - **Orange Reset Account Button Fixed**: Changed from form POST to Alpine.js @click handler that properly calls the API and resets demo balance to $10,000
 - **Combined Trade History**: New `/api/trades/all-history` endpoint returns both demo and live trades with account_type field
