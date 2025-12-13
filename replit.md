@@ -116,3 +116,15 @@ Preferred communication style: Simple, everyday language.
 - **Bank Transfer Option**: Added with professional "Under Maintenance" modal that directs users to cryptocurrency deposits
 - **Real Wallet Addresses**: All production wallet addresses configured (no placeholder data)
 - **Deposit History**: Real-time display of all user deposits with status tracking (pending/completed/failed)
+
+## Recent Updates (December 13, 2025)
+
+### Demo Trading Improvements
+- **Orange Reset Account Button Fixed**: Changed from form POST to Alpine.js @click handler that properly calls the API and resets demo balance to $10,000
+- **Combined Trade History**: New `/api/trades/all-history` endpoint returns both demo and live trades with account_type field
+- **DEMO-HISTORY.html Updated**: 
+  - Now shows ALL trades (both demo and live) instead of just demo trades
+  - Added "Account" column with DEMO/LIVE badges (green for demo, blue for live)
+  - Stats section now shows Demo Trades and Live Trades counts separately
+  - Updated page title to "Trade History" 
+  - Empty state messaging updated to reflect all trades
