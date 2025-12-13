@@ -4,7 +4,7 @@
       class="dark bg-gray-900">
 <head>
     <meta charset="UTF-8">
-    <title>Demo Trade History - Pip Matrix</title>
+    <title>Trade History - Pip Matrix</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="images/LOGO.jpeg" rel="icon" type="image/x-icon" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -35,7 +35,7 @@
     sidebarOpen: false, 
     demoBalance: 10000,
     trades: [],
-    stats: { total_trades: 0, wins: 0, losses: 0, total_profit: 0, total_loss: 0, net_pnl: 0, win_rate: 0 },
+    stats: { total_trades: 0, demo_trades: 0, live_trades: 0, wins: 0, losses: 0, total_profit: 0, total_loss: 0, net_pnl: 0, win_rate: 0 },
     loading: true
 }"
       x-init="init(); loadHistory();"
@@ -68,12 +68,12 @@
 <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Demo Trade History</h1>
-            <p class="mt-1 text-gray-600 dark:text-gray-400">View your completed demo trades and performance</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Trade History</h1>
+            <p class="mt-1 text-gray-600 dark:text-gray-400">View all your completed trades (Demo + Live)</p>
         </div>
         <div class="flex gap-3">
             <a href="DEMO-START.html" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                <i data-lucide="plus" class="w-4 h-4"></i> New Trade
+                <i data-lucide="plus" class="w-4 h-4"></i> Demo Trade
             </a>
             <a href="DEMO.html" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i> Dashboard
@@ -81,14 +81,22 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
         <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
             <div class="text-sm text-gray-500 dark:text-gray-400">Total Trades</div>
             <div class="text-2xl font-bold text-gray-900 dark:text-white" x-text="stats.total_trades">0</div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Demo Trades</div>
+            <div class="text-2xl font-bold text-green-600 dark:text-green-400" x-text="stats.demo_trades">0</div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Live Trades</div>
+            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" x-text="stats.live_trades">0</div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
             <div class="text-sm text-gray-500 dark:text-gray-400">Win Rate</div>
-            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" x-text="stats.win_rate.toFixed(1) + '%'">0%</div>
+            <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" x-text="stats.win_rate.toFixed(1) + '%'">0%</div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
             <div class="text-sm text-gray-500 dark:text-gray-400">Total Profit</div>
@@ -112,9 +120,9 @@
 
         <div x-show="!loading && trades.length === 0" class="p-8 text-center">
             <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-3"></i>
-            <p class="text-gray-500 dark:text-gray-400">No demo trades yet. Start trading to see your history!</p>
+            <p class="text-gray-500 dark:text-gray-400">No trades yet. Start trading to see your history!</p>
             <a href="DEMO-START.html" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                <i data-lucide="play" class="w-4 h-4"></i> Start Demo Trade
+                <i data-lucide="play" class="w-4 h-4"></i> Start Trading
             </a>
         </div>
 
@@ -122,6 +130,7 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asset</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
@@ -136,6 +145,11 @@
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     <template x-for="trade in trades" :key="trade.id">
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-bold rounded-full"
+                                      :class="trade.is_demo ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'"
+                                      x-text="trade.account_type"></span>
+                            </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <span class="font-medium text-gray-900 dark:text-white" x-text="trade.symbol"></span>
                             </td>
@@ -198,7 +212,7 @@ async function loadHistory() {
     try {
         const [balanceRes, historyRes] = await Promise.all([
             fetch('/api/demo/balance'),
-            fetch('/api/demo/history')
+            fetch('/api/trades/all-history')
         ]);
         
         const balanceData = await balanceRes.json();

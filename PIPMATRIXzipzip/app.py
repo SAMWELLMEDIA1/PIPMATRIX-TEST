@@ -1116,5 +1116,48 @@ def reset_demo_account():
         'new_balance': 10000.0
     })
 
+@app.route('/api/trades/all-history', methods=['GET'])
+@login_required
+def get_all_trade_history():
+    trades = Trade.query.filter_by(user_id=current_user.id, status='closed').order_by(Trade.closed_at.desc()).all()
+    
+    total_profit = sum(t.profit_loss for t in trades if t.profit_loss > 0)
+    total_loss = abs(sum(t.profit_loss for t in trades if t.profit_loss < 0))
+    win_count = sum(1 for t in trades if t.profit_loss > 0)
+    loss_count = sum(1 for t in trades if t.profit_loss <= 0)
+    
+    demo_trades = [t for t in trades if t.is_demo]
+    live_trades = [t for t in trades if not t.is_demo]
+    
+    return jsonify({
+        'success': True,
+        'trades': [{
+            'id': t.id,
+            'symbol': t.symbol,
+            'trade_type': t.trade_type,
+            'amount': t.amount,
+            'entry_price': t.entry_price,
+            'exit_price': t.exit_price,
+            'profit_loss': t.profit_loss,
+            'leverage': t.leverage,
+            'is_demo': t.is_demo,
+            'account_type': 'DEMO' if t.is_demo else 'LIVE',
+            'result': 'win' if t.profit_loss > 0 else 'loss',
+            'created_at': t.created_at.isoformat(),
+            'closed_at': t.closed_at.isoformat() if t.closed_at else None
+        } for t in trades],
+        'stats': {
+            'total_trades': len(trades),
+            'demo_trades': len(demo_trades),
+            'live_trades': len(live_trades),
+            'wins': win_count,
+            'losses': loss_count,
+            'total_profit': total_profit,
+            'total_loss': total_loss,
+            'net_pnl': total_profit - total_loss,
+            'win_rate': (win_count / len(trades) * 100) if trades else 0
+        }
+    })
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

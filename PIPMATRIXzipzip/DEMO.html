@@ -1010,7 +1010,7 @@
                     <span>Start Demo Trade</span>
                 </a>
 
-                <a href="demo/history" class="flex items-center justify-center gap-3 px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors shadow-sm">
+                <a href="DEMO-HISTORY.html" class="flex items-center justify-center gap-3 px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors shadow-sm">
                     <i data-lucide="history" class="w-5 h-5"></i>
                     <span>View History</span>
                 </a>
@@ -1020,12 +1020,10 @@
                     <span>Live Trading</span>
                 </a>
 
-                <form action="demo/reset" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to reset your demo account? This will close all active trades and reset your balance to $100,000.')">
-                    <input type="hidden" name="_token" value="NGvdzBA28ebfgDOTp2UAwymDBT2P4HQin3eXTGcr">                    <button type="submit" class="w-full flex items-center justify-center gap-3 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors shadow-sm">
-                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                        <span>Reset Account</span>
-                    </button>
-                </form>
+                <button type="button" @click="resetDemoAccount()" class="w-full flex items-center justify-center gap-3 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors shadow-sm">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    <span>Reset Account</span>
+                </button>
             </div>
         </div>
     </div>
