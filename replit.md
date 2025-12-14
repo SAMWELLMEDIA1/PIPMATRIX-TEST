@@ -151,3 +151,23 @@ Preferred communication style: Simple, everyday language.
   - "Deposit Funds" button instead of demo reset
 - **Dashboard Quick Trade Updated**: Added "Start Live Trade" link in Quick Trade dropdown
 - **Trading Flow**: Users can now trade with real money via LIVE-START.html
+
+## Recent Updates (December 14, 2025)
+
+### Martingale Trading Chart (Pocket Option Style)
+- **Custom Canvas-Based Chart**: Added to DASHBOARD.html replacing TradingView mini widgets
+- **Chart Types**: Toggle between Line, Candlestick, and Area charts
+- **Assets Supported**: BTC/USD, ETH/USD, EUR/USD, GBP/USD, XAU/USD, SOL/USD, BNB/USD, ADA/USD
+- **Timeframe Selector**: 5s, 15s, 30s, 1m, 5m, 15m options
+- **Real-Time Animation**: Simulated price updates with realistic volatility per asset
+- **Market Sentiment**: Visual buy/sell percentage indicator
+- **Payout Display**: Dynamic payout percentage (88-95%) per asset
+- **Trade Timer**: Countdown timer for trade duration
+- **Trading Panel Features**:
+  - Amount input with /2 and x2 quick buttons
+  - Duration selector (30s, 1m, 2m, 5m)
+  - UP/DOWN trade buttons with payout display
+  - Confirmation modal with trade details
+  - Integration with `/api/trades` endpoint
+- **Mobile Responsive**: Fully responsive design for all screen sizes
+- **Brand Colors**: Uses Pip Matrix blue/indigo theme with dark mode
