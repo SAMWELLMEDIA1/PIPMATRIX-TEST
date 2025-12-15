@@ -1522,6 +1522,11 @@ function dashboardData() {
             tradeDuration: 60,
             tradeTimer: 0,
             isTrading: false,
+            currentTradeId: null,
+            currentTradeType: null,
+            tradeEntryPrice: null,
+            tradeTimerInterval: null,
+            isClosingTrade: false,
             priceHistory: [],
             candleData: [],
             canvas: null,
@@ -1569,7 +1574,7 @@ function dashboardData() {
                 window.addEventListener('resize', () => this.resizeCanvas());
                 this.changeAsset();
                 this.startPriceUpdates();
-                this.startTradeTimer();
+                this.tradeTimer = this.tradeDuration;
                 lucide.createIcons();
             },
             
@@ -1655,13 +1660,132 @@ function dashboardData() {
             },
             
             startTradeTimer() {
+                if (this.tradeTimerInterval) {
+                    clearInterval(this.tradeTimerInterval);
+                }
+                
                 this.tradeTimer = this.tradeDuration;
-                setInterval(() => {
-                    this.tradeTimer--;
-                    if (this.tradeTimer <= 0) {
-                        this.tradeTimer = this.tradeDuration;
+                
+                this.tradeTimerInterval = setInterval(async () => {
+                    if (this.tradeTimer > 0 && this.currentTradeId) {
+                        this.tradeTimer--;
+                    }
+                    
+                    if (this.tradeTimer <= 0 && this.currentTradeId && !this.isClosingTrade) {
+                        await this.autoCloseTrade();
                     }
                 }, 1000);
+            },
+            
+            stopTradeTimer() {
+                if (this.tradeTimerInterval) {
+                    clearInterval(this.tradeTimerInterval);
+                    this.tradeTimerInterval = null;
+                }
+            },
+            
+            async autoCloseTrade() {
+                if (!this.currentTradeId || this.isClosingTrade) return;
+                
+                this.isClosingTrade = true;
+                
+                const tradeId = this.currentTradeId;
+                const exitPrice = this.currentPrice;
+                const entryPrice = this.tradeEntryPrice;
+                const tradeType = this.currentTradeType;
+                const assetName = this.selectedAsset;
+                const decimals = this.priceDecimals;
+                
+                try {
+                    const response = await fetch(`/api/trades/${tradeId}/close`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ exit_price: exitPrice })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const profitLoss = data.profit_loss;
+                        const isProfit = profitLoss >= 0;
+                        
+                        Swal.fire({
+                            icon: isProfit ? 'success' : 'error',
+                            title: isProfit ? 'Trade Won!' : 'Trade Lost',
+                            html: `<div class="text-left">
+                                <p><strong>Asset:</strong> ${assetName}</p>
+                                <p><strong>Type:</strong> ${tradeType ? tradeType.toUpperCase() : 'N/A'}</p>
+                                <p><strong>Entry:</strong> ${entryPrice ? entryPrice.toFixed(decimals) : 'N/A'}</p>
+                                <p><strong>Exit:</strong> ${exitPrice.toFixed(decimals)}</p>
+                                <p><strong>${isProfit ? 'Profit' : 'Loss'}:</strong> <span class="${isProfit ? 'text-green-500' : 'text-red-500'}">${isProfit ? '+' : ''}$${profitLoss.toFixed(2)}</span></p>
+                            </div>`,
+                            confirmButtonColor: isProfit ? '#22c55e' : '#ef4444',
+                            background: '#1f2937',
+                            color: '#fff'
+                        });
+                        
+                        this.currentTradeId = null;
+                        this.currentTradeType = null;
+                        this.tradeEntryPrice = null;
+                        this.stopTradeTimer();
+                        this.tradeTimer = this.tradeDuration;
+                        
+                        try {
+                            const dashboardEl = document.querySelector('[x-data="dashboardData()"]');
+                            if (dashboardEl) {
+                                const dashboard = Alpine.$data(dashboardEl);
+                                if (dashboard && dashboard.loadUserData) {
+                                    await dashboard.loadUserData();
+                                }
+                            }
+                        } catch (e) {
+                            console.log('Balance refresh skipped:', e);
+                        }
+                    } else {
+                        console.error('Trade close failed:', data.message);
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Trade Close Issue',
+                            text: data.message || 'Could not close trade. Please check your trade history.',
+                            background: '#1f2937',
+                            color: '#fff',
+                            confirmButtonColor: '#3B82F6'
+                        });
+                        this.currentTradeId = null;
+                        this.currentTradeType = null;
+                        this.tradeEntryPrice = null;
+                        this.stopTradeTimer();
+                        this.tradeTimer = this.tradeDuration;
+                    }
+                } catch (error) {
+                    console.error('Auto close trade error:', error);
+                    const retryResult = await Swal.fire({
+                        icon: 'error',
+                        title: 'Connection Error',
+                        html: `<p>Could not close trade due to connection issue.</p><p class="mt-2 text-sm">Trade ID: ${tradeId}</p>`,
+                        showCancelButton: true,
+                        confirmButtonText: 'Retry Close',
+                        cancelButtonText: 'Cancel Trade',
+                        background: '#1f2937',
+                        color: '#fff',
+                        confirmButtonColor: '#22c55e',
+                        cancelButtonColor: '#ef4444'
+                    });
+                    
+                    if (retryResult.isConfirmed) {
+                        this.isClosingTrade = false;
+                        this.tradeTimer = 1;
+                        return;
+                    } else {
+                        this.currentTradeId = null;
+                        this.currentTradeType = null;
+                        this.tradeEntryPrice = null;
+                        this.stopTradeTimer();
+                        this.tradeTimer = this.tradeDuration;
+                    }
+                }
+                
+                this.isClosingTrade = false;
             },
             
             formatTimer(seconds) {
@@ -1671,7 +1795,17 @@ function dashboardData() {
             },
 
             async executeTrade(tradeType) {
-                if (this.isTrading) return;
+                if (this.isTrading || this.currentTradeId) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Trade In Progress',
+                        text: 'Please wait for your current trade to complete.',
+                        confirmButtonColor: '#3B82F6',
+                        background: '#1f2937',
+                        color: '#fff'
+                    });
+                    return;
+                }
                 
                 this.isTrading = true;
                 const entryPrice = this.currentPrice;
@@ -1687,6 +1821,11 @@ function dashboardData() {
                     );
                     
                     if (result.success) {
+                        this.currentTradeId = result.trade_id;
+                        this.currentTradeType = tradeType;
+                        this.tradeEntryPrice = entryPrice;
+                        this.startTradeTimer();
+                        
                         Swal.fire({
                             icon: 'success',
                             title: 'Trade Placed!',
@@ -1696,18 +1835,22 @@ function dashboardData() {
                                 <p><strong>Amount:</strong> $${this.tradeAmount}</p>
                                 <p><strong>Entry Price:</strong> ${entryPrice.toFixed(this.priceDecimals)}</p>
                                 <p><strong>Expiration:</strong> ${this.tradeDuration}s</p>
+                                <p class="mt-2 text-yellow-400 text-sm">Trade will auto-close when timer ends</p>
                             </div>`,
                             confirmButtonColor: tradeType === 'buy' ? '#22c55e' : '#ef4444',
                             timer: 3000,
-                            timerProgressBar: true
+                            timerProgressBar: true,
+                            background: '#1f2937',
+                            color: '#fff'
                         });
-                        this.tradeTimer = this.tradeDuration;
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Trade Failed',
                             text: result.message || 'Could not place trade. Please try again.',
-                            confirmButtonColor: '#3B82F6'
+                            confirmButtonColor: '#3B82F6',
+                            background: '#1f2937',
+                            color: '#fff'
                         });
                     }
                 } catch (error) {
@@ -1716,7 +1859,9 @@ function dashboardData() {
                         icon: 'error',
                         title: 'Trade Failed',
                         text: error.message || 'Insufficient balance or connection error.',
-                        confirmButtonColor: '#3B82F6'
+                        confirmButtonColor: '#3B82F6',
+                        background: '#1f2937',
+                        color: '#fff'
                     });
                 }
                 
@@ -1872,77 +2017,6 @@ function dashboardData() {
                 });
             },
             
-            async executeTrade(direction) {
-                const potentialProfit = (this.tradeAmount * this.payout / 100).toFixed(2);
-                
-                const result = await Swal.fire({
-                    title: `Confirm ${direction.toUpperCase()} Trade`,
-                    html: `
-                        <div class="text-left">
-                            <p class="mb-2"><strong>Asset:</strong> ${this.selectedAsset}</p>
-                            <p class="mb-2"><strong>Direction:</strong> <span class="${direction === 'buy' ? 'text-green-500' : 'text-red-500'}">${direction.toUpperCase()}</span></p>
-                            <p class="mb-2"><strong>Amount:</strong> $${this.tradeAmount}</p>
-                            <p class="mb-2"><strong>Duration:</strong> ${this.tradeDuration}s</p>
-                            <p class="mb-2"><strong>Entry Price:</strong> ${this.currentPrice.toFixed(this.priceDecimals)}</p>
-                            <p class="mb-2"><strong>Potential Profit:</strong> <span class="text-green-500">+$${potentialProfit}</span></p>
-                        </div>
-                    `,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: direction === 'buy' ? '#22c55e' : '#ef4444',
-                    cancelButtonColor: '#6b7280',
-                    confirmButtonText: `Place ${direction.toUpperCase()} Trade`,
-                    background: '#1f2937',
-                    color: '#fff'
-                });
-                
-                if (result.isConfirmed) {
-                    try {
-                        const response = await fetch('/api/trades', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                symbol: this.selectedAsset,
-                                amount: this.tradeAmount,
-                                trade_type: direction,
-                                leverage: 1,
-                                is_demo: false
-                            })
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Trade Placed!',
-                                text: `Your ${direction.toUpperCase()} trade on ${this.selectedAsset} has been executed.`,
-                                background: '#1f2937',
-                                color: '#fff',
-                                confirmButtonColor: '#3b82f6'
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Trade Failed',
-                                text: data.message || 'Insufficient balance. Please deposit funds.',
-                                background: '#1f2937',
-                                color: '#fff',
-                                confirmButtonColor: '#3b82f6'
-                            });
-                        }
-                    } catch (error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Failed to execute trade. Please try again.',
-                            background: '#1f2937',
-                            color: '#fff',
-                            confirmButtonColor: '#3b82f6'
-                        });
-                    }
-                }
-            }
         };
     }
     </script>
