@@ -126,6 +126,13 @@ const api = {
                 method: 'POST',
                 body: formData
             });
+        },
+
+        async submitDepositJson(data) {
+            return api.request('/deposit/crypto', {
+                method: 'POST',
+                body: data
+            });
         }
     },
 
@@ -471,15 +478,24 @@ function cryptoPayment() {
             this.submitting = true;
 
             try {
-                const formData = new FormData();
-                formData.append('amount', this.amount);
-                formData.append('crypto_type', this.selectedCrypto.id);
-                formData.append('txid', this.txid);
+                let result;
+                
                 if (this.receiptFile) {
+                    // Use FormData when there's a file
+                    const formData = new FormData();
+                    formData.append('amount', this.amount);
+                    formData.append('crypto_type', this.selectedCrypto.id);
+                    formData.append('txid', this.txid);
                     formData.append('receipt', this.receiptFile);
+                    result = await api.crypto.submitDeposit(formData);
+                } else {
+                    // Use JSON when no file
+                    result = await api.crypto.submitDepositJson({
+                        amount: parseFloat(this.amount),
+                        crypto_type: this.selectedCrypto.id,
+                        txid: this.txid
+                    });
                 }
-
-                const result = await api.crypto.submitDeposit(formData);
                 
                 if (result.success) {
                     Swal.fire({
