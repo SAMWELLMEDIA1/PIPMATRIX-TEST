@@ -401,16 +401,23 @@ function cryptoPayment() {
         loading: false,
         submitting: false,
         step: 1,
+        depositHistory: [],
 
         async init() {
             this.loading = true;
             try {
-                const data = await api.crypto.getWallets();
-                if (data.success) {
-                    this.wallets = data.wallets;
+                const [walletsData, historyData] = await Promise.all([
+                    api.crypto.getWallets(),
+                    api.transactions.getAll(1, 'deposit')
+                ]);
+                if (walletsData.success) {
+                    this.wallets = walletsData.wallets;
+                }
+                if (historyData.success && historyData.transactions) {
+                    this.depositHistory = historyData.transactions;
                 }
             } catch (error) {
-                console.error('Failed to load wallets:', error);
+                console.error('Failed to load data:', error);
                 showNotification('Failed to load payment options', 'error');
             }
             this.loading = false;
