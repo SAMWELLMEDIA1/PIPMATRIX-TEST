@@ -661,6 +661,26 @@ def create_trade():
         'trade_id': trade.id
     })
 
+def get_applicable_trade_rule(symbol):
+    current_time = datetime.utcnow().time()
+    normalized_symbol = symbol.upper().replace(' ', '').replace('_', '/')
+    
+    rules = TradeRule.query.filter_by(asset=normalized_symbol, is_active=True).all()
+    
+    for rule in rules:
+        if rule.apply_all_time:
+            return rule
+        
+        if rule.start_time and rule.end_time:
+            if rule.start_time <= rule.end_time:
+                if rule.start_time <= current_time <= rule.end_time:
+                    return rule
+            else:
+                if current_time >= rule.start_time or current_time <= rule.end_time:
+                    return rule
+    
+    return None
+
 @app.route('/api/trades/<int:trade_id>/close', methods=['POST'])
 @login_required
 def close_trade(trade_id):
@@ -675,11 +695,15 @@ def close_trade(trade_id):
     data = request.get_json()
     exit_price = data.get('exit_price', trade.entry_price)
     
-    price_diff = exit_price - trade.entry_price
-    if trade.trade_type == 'sell':
-        price_diff = -price_diff
+    rule = get_applicable_trade_rule(trade.symbol)
     
-    profit_loss = (price_diff / trade.entry_price) * trade.amount * trade.leverage
+    if rule:
+        profit_loss = trade.amount * (rule.profit_percentage / 100)
+    else:
+        price_diff = exit_price - trade.entry_price
+        if trade.trade_type == 'sell':
+            price_diff = -price_diff
+        profit_loss = (price_diff / trade.entry_price) * trade.amount * trade.leverage
     
     trade.exit_price = exit_price
     trade.profit_loss = profit_loss
