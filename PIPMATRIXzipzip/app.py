@@ -474,8 +474,10 @@ def create_withdrawal():
         user_id=current_user.id,
         type='withdrawal',
         amount=amount,
-        payment_method=data.get('payment_method'),
+        payment_method=data.get('payment_method', 'crypto'),
         wallet_address=data.get('wallet_address'),
+        crypto_type=data.get('crypto_type'),
+        crypto_network=data.get('crypto_network'),
         status='pending',
         reference=f"WTH{secrets.token_hex(6).upper()}"
     )
@@ -662,9 +664,37 @@ def create_trade():
         'trade_id': trade.id
     })
 
+def normalize_symbol(symbol):
+    """
+    Normalize trading symbol to consistent format: BASE/QUOTE (e.g., BTC/USD)
+    Handles: BTCUSD, BTC-USD, BTC_USD, BTC/USD, btc/usd, SHIB/USDT, etc.
+    """
+    if not symbol:
+        return symbol
+    
+    s = symbol.upper().strip()
+    
+    for delim in ['/', '-', '_', ' ']:
+        if delim in s:
+            parts = [p.strip() for p in s.split(delim) if p.strip()]
+            if len(parts) == 2:
+                return f"{parts[0]}/{parts[1]}"
+    
+    s = s.replace(' ', '')
+    
+    quote_currencies = ['USDT', 'USDC', 'BUSD', 'USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'BTC', 'ETH', 'BNB']
+    
+    for quote in sorted(quote_currencies, key=len, reverse=True):
+        if s.endswith(quote) and len(s) > len(quote):
+            base = s[:-len(quote)]
+            if base:
+                return f"{base}/{quote}"
+    
+    return s
+
 def get_applicable_trade_rule(symbol):
     current_time = datetime.utcnow().time()
-    normalized_symbol = symbol.upper().replace(' ', '').replace('_', '/')
+    normalized_symbol = normalize_symbol(symbol)
     
     rules = TradeRule.query.filter_by(asset=normalized_symbol, is_active=True).all()
     
@@ -1573,7 +1603,7 @@ def create_trade_rule():
                 return jsonify({'success': False, 'message': 'Invalid end time format. Use HH:MM'}), 400
     
     rule = TradeRule(
-        asset=asset.upper(),
+        asset=normalize_symbol(asset),
         start_time=start_time,
         end_time=end_time,
         profit_percentage=profit_percentage,
@@ -1600,7 +1630,7 @@ def update_trade_rule(rule_id):
     data = request.get_json()
     
     if 'asset' in data:
-        rule.asset = data['asset'].upper()
+        rule.asset = normalize_symbol(data['asset'])
     if 'profit_percentage' in data:
         rule.profit_percentage = data['profit_percentage']
     if 'is_active' in data:
