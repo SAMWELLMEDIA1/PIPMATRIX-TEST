@@ -1,6 +1,7 @@
 import os
 import io
 import base64
+from functools import wraps
 from flask import Flask, request, jsonify, session, redirect, url_for, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Account, Transaction, Investment, Trade, Loan, CopyTrading, BotTrading, Referral, SupportTicket, Notification, TradeRule, Subscription
@@ -1186,7 +1187,6 @@ def get_all_trade_history():
     })
 
 def admin_required(f):
-    from functools import wraps
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated or not current_user.is_admin:
