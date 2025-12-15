@@ -2516,14 +2516,44 @@ async function executeDashboardTrade(orderType) {
                 <div class="flex items-center gap-4">
                     <div class="relative">
                         <select x-model="selectedAsset" @change="changeAsset()" class="bg-gray-800 text-white text-sm font-semibold px-4 py-2 pr-8 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer">
-                            <option value="BTC/USD">BTC/USD</option>
-                            <option value="ETH/USD">ETH/USD</option>
-                            <option value="EUR/USD">EUR/USD</option>
-                            <option value="GBP/USD">GBP/USD</option>
-                            <option value="XAU/USD">XAU/USD</option>
-                            <option value="SOL/USD">SOL/USD</option>
-                            <option value="BNB/USD">BNB/USD</option>
-                            <option value="ADA/USD">ADA/USD</option>
+                            <optgroup label="Crypto">
+                                <option value="BTC/USD">BTC/USD</option>
+                                <option value="ETH/USD">ETH/USD</option>
+                                <option value="SOL/USD">SOL/USD</option>
+                                <option value="BNB/USD">BNB/USD</option>
+                                <option value="ADA/USD">ADA/USD</option>
+                                <option value="XRP/USD">XRP/USD</option>
+                                <option value="DOGE/USD">DOGE/USD</option>
+                                <option value="DOT/USD">DOT/USD</option>
+                                <option value="AVAX/USD">AVAX/USD</option>
+                                <option value="MATIC/USD">MATIC/USD</option>
+                                <option value="LINK/USD">LINK/USD</option>
+                                <option value="LTC/USD">LTC/USD</option>
+                            </optgroup>
+                            <optgroup label="Forex">
+                                <option value="EUR/USD">EUR/USD</option>
+                                <option value="GBP/USD">GBP/USD</option>
+                                <option value="USD/JPY">USD/JPY</option>
+                                <option value="USD/CHF">USD/CHF</option>
+                                <option value="AUD/USD">AUD/USD</option>
+                                <option value="USD/CAD">USD/CAD</option>
+                                <option value="NZD/USD">NZD/USD</option>
+                                <option value="EUR/GBP">EUR/GBP</option>
+                            </optgroup>
+                            <optgroup label="Commodities">
+                                <option value="XAU/USD">XAU/USD (Gold)</option>
+                                <option value="XAG/USD">XAG/USD (Silver)</option>
+                                <option value="OIL/USD">OIL/USD (Crude)</option>
+                            </optgroup>
+                            <optgroup label="Stocks">
+                                <option value="AAPL">AAPL</option>
+                                <option value="TSLA">TSLA</option>
+                                <option value="AMZN">AMZN</option>
+                                <option value="GOOGL">GOOGL</option>
+                                <option value="MSFT">MSFT</option>
+                                <option value="META">META</option>
+                                <option value="NVDA">NVDA</option>
+                            </optgroup>
                         </select>
                         <i data-lucide="chevron-down" class="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                     </div>
@@ -2683,14 +2713,36 @@ async function executeDashboardTrade(orderType) {
             animationId: null,
             
             assetConfig: {
-                'BTC/USD': { base: 97500, volatility: 500, decimals: 2 },
-                'ETH/USD': { base: 3450, volatility: 50, decimals: 2 },
-                'EUR/USD': { base: 1.0520, volatility: 0.002, decimals: 5 },
-                'GBP/USD': { base: 1.2650, volatility: 0.003, decimals: 5 },
-                'XAU/USD': { base: 2650, volatility: 15, decimals: 2 },
-                'SOL/USD': { base: 220, volatility: 5, decimals: 2 },
-                'BNB/USD': { base: 710, volatility: 8, decimals: 2 },
-                'ADA/USD': { base: 1.05, volatility: 0.02, decimals: 4 }
+                'BTC/USD': { base: 97500, volatility: 300, decimals: 2 },
+                'ETH/USD': { base: 3450, volatility: 30, decimals: 2 },
+                'SOL/USD': { base: 220, volatility: 3, decimals: 2 },
+                'BNB/USD': { base: 710, volatility: 5, decimals: 2 },
+                'ADA/USD': { base: 1.05, volatility: 0.01, decimals: 4 },
+                'XRP/USD': { base: 2.35, volatility: 0.02, decimals: 4 },
+                'DOGE/USD': { base: 0.42, volatility: 0.005, decimals: 5 },
+                'DOT/USD': { base: 7.50, volatility: 0.08, decimals: 3 },
+                'AVAX/USD': { base: 45.00, volatility: 0.5, decimals: 2 },
+                'MATIC/USD': { base: 0.55, volatility: 0.005, decimals: 4 },
+                'LINK/USD': { base: 24.00, volatility: 0.3, decimals: 2 },
+                'LTC/USD': { base: 115.00, volatility: 1.5, decimals: 2 },
+                'EUR/USD': { base: 1.0520, volatility: 0.0008, decimals: 5 },
+                'GBP/USD': { base: 1.2650, volatility: 0.001, decimals: 5 },
+                'USD/JPY': { base: 154.50, volatility: 0.08, decimals: 3 },
+                'USD/CHF': { base: 0.8850, volatility: 0.0006, decimals: 5 },
+                'AUD/USD': { base: 0.6350, volatility: 0.0005, decimals: 5 },
+                'USD/CAD': { base: 1.4150, volatility: 0.0008, decimals: 5 },
+                'NZD/USD': { base: 0.5650, volatility: 0.0005, decimals: 5 },
+                'EUR/GBP': { base: 0.8320, volatility: 0.0005, decimals: 5 },
+                'XAU/USD': { base: 2650, volatility: 8, decimals: 2 },
+                'XAG/USD': { base: 31.50, volatility: 0.15, decimals: 2 },
+                'OIL/USD': { base: 71.50, volatility: 0.4, decimals: 2 },
+                'AAPL': { base: 248.00, volatility: 1.5, decimals: 2 },
+                'TSLA': { base: 420.00, volatility: 5, decimals: 2 },
+                'AMZN': { base: 225.00, volatility: 2, decimals: 2 },
+                'GOOGL': { base: 192.00, volatility: 1.5, decimals: 2 },
+                'MSFT': { base: 445.00, volatility: 3, decimals: 2 },
+                'META': { base: 610.00, volatility: 4, decimals: 2 },
+                'NVDA': { base: 135.00, volatility: 2, decimals: 2 }
             },
             
             init() {
@@ -2783,7 +2835,7 @@ async function executeDashboardTrade(orderType) {
                     if (Math.random() < 0.1) {
                         this.buyPercentage = Math.max(30, Math.min(70, this.buyPercentage + (Math.random() - 0.5) * 5));
                     }
-                }, 100);
+                }, 500);
             },
             
             startTradeTimer() {
@@ -3027,23 +3079,6 @@ async function executeDashboardTrade(orderType) {
     </script>
 
 
-<!-- News Feed Widget -->
-<div class="mt-4 sm:mt-6">
-    <div class="tradingview-widget-container bg-white dark:bg-gray-800 rounded-xl shadow p-3 sm:p-4">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-        {
-            "feedMode": "all_symbols",
-            "colorTheme": "dark",
-            "isTransparent": true,
-            "displayMode": "compact",
-            "width": "100%",
-            "height": "350",
-            "locale": "en"
-        }
-        </script>
-    </div>
-</div>
 </div>
 
 <script>
