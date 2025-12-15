@@ -791,7 +791,49 @@
   <div class="flex-1 ml-0 md:ml-64 p-4 pb-20 md:pb-4">
     <!-- Your main dashboard content goes here -->
     
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-4 sm:py-8" x-data="{ showCodeInfo: false, selectedMethod: '' }">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-4 sm:py-8" x-data="{ 
+    showCodeInfo: false, 
+    selectedMethod: '', 
+    amount: '', 
+    walletAddress: '', 
+    submitting: false,
+    async submitWithdrawal() {
+        if (!this.selectedMethod || !this.amount || !this.walletAddress) {
+            Swal.fire('Error', 'Please fill in all fields', 'error');
+            return;
+        }
+        if (parseFloat(this.amount) <= 0) {
+            Swal.fire('Error', 'Please enter a valid amount', 'error');
+            return;
+        }
+        this.submitting = true;
+        try {
+            const res = await fetch('/api/withdraw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: parseFloat(this.amount),
+                    payment_method: this.selectedMethod,
+                    wallet_address: this.walletAddress,
+                    crypto_type: this.selectedMethod,
+                    crypto_network: this.selectedMethod
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                Swal.fire('Success!', 'Your withdrawal request has been submitted and is being processed.', 'success');
+                this.amount = '';
+                this.walletAddress = '';
+                this.selectedMethod = '';
+            } else {
+                Swal.fire('Error', data.message || 'Failed to submit withdrawal', 'error');
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Network error. Please try again.', 'error');
+        }
+        this.submitting = false;
+    }
+}">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
@@ -844,8 +886,7 @@
             </div>
 
             <div class="p-4 sm:p-6 lg:p-8">
-                <form method="POST" action="dashboard/enter-amount" class="space-y-6 sm:space-y-8">
-                    <input type="hidden" name="_token" value="NGvdzBA28ebfgDOTp2UAwymDBT2P4HQin3eXTGcr">
+                <form @submit.prevent="submitWithdrawal()" class="space-y-6 sm:space-y-8">
                     <!-- Enhanced Withdrawal Method Selector -->
                     <div>
                         <label for="method" class="block text-sm font-semibold text-gray-200 mb-3 sm:mb-4">
@@ -860,39 +901,73 @@
                                 class="appearance-none block w-full pl-4 pr-12 py-3 sm:py-4 border border-gray-600/50 bg-gray-800/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white text-sm sm:text-base transition-all duration-200 backdrop-blur-sm"
                             >
                                 <option value="" disabled selected>Choose a withdrawal method</option>
-                                                                    <option value="USDT">USDT</option>
-                                                                    <option value="Bank Transfer">Bank Transfer</option>
-                                                                    <option value="Ethereum">Ethereum</option>
-                                                                    <option value="Bitcoin">Bitcoin</option>
-                                                            </select>
+                                <option value="USDT">USDT (TRC20)</option>
+                                <option value="Bitcoin">Bitcoin</option>
+                                <option value="Ethereum">Ethereum</option>
+                                <option value="BNB">BNB</option>
+                            </select>
                             <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
                                 <i data-lucide="chevron-down" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400"></i>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Amount Input -->
+                    <div x-show="selectedMethod" x-transition>
+                        <label for="amount" class="block text-sm font-semibold text-gray-200 mb-3 sm:mb-4">
+                            Withdrawal Amount (USD)
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-semibold">$</span>
+                            <input
+                                type="number"
+                                id="amount"
+                                x-model="amount"
+                                placeholder="Enter amount"
+                                min="10"
+                                step="0.01"
+                                required
+                                class="block w-full pl-8 pr-4 py-3 sm:py-4 border border-gray-600/50 bg-gray-800/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white text-sm sm:text-base transition-all duration-200 backdrop-blur-sm"
+                            />
+                        </div>
+                        <p class="mt-2 text-xs text-gray-400">Minimum withdrawal: $10.00</p>
+                    </div>
+
+                    <!-- Wallet Address Input -->
+                    <div x-show="selectedMethod" x-transition>
+                        <label for="walletAddress" class="block text-sm font-semibold text-gray-200 mb-3 sm:mb-4">
+                            Your <span x-text="selectedMethod"></span> Wallet Address
+                        </label>
+                        <input
+                            type="text"
+                            id="walletAddress"
+                            x-model="walletAddress"
+                            placeholder="Enter your wallet address"
+                            required
+                            class="block w-full px-4 py-3 sm:py-4 border border-gray-600/50 bg-gray-800/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white text-sm sm:text-base transition-all duration-200 backdrop-blur-sm"
+                        />
+                        <p class="mt-2 text-xs text-gray-400">Please double-check your wallet address. Funds sent to wrong addresses cannot be recovered.</p>
+                    </div>
+
                     <!-- Enhanced Method Details Card -->
-                    <div x-show="selectedMethod" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" class="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl p-4 sm:p-6 border border-blue-500/30 backdrop-blur-sm" style="display: none;">
+                    <div x-show="selectedMethod" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" class="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl p-4 sm:p-6 border border-blue-500/30 backdrop-blur-sm">
                         <div class="flex flex-col sm:flex-row items-start gap-4">
-                            <!-- Enhanced Dynamic icon based on method -->
                             <div class="p-3 rounded-xl shadow-sm mx-auto sm:mx-0" :class="{
                                 'bg-orange-500/20': selectedMethod === 'Bitcoin',
                                 'bg-blue-500/20': selectedMethod === 'Ethereum',
-                                'bg-green-500/20': selectedMethod === 'Bank Transfer',
-                                'bg-blue-500/20': selectedMethod === 'USDT',
-                                'bg-gray-500/20': !['Bitcoin', 'Ethereum', 'Bank Transfer', 'USDT'].includes(selectedMethod)
+                                'bg-green-500/20': selectedMethod === 'USDT',
+                                'bg-yellow-500/20': selectedMethod === 'BNB'
                             }">
-                                <i :data-lucide="selectedMethod === 'Bitcoin' ? 'bitcoin' : (selectedMethod === 'Ethereum' ? 'zap' : (selectedMethod === 'Bank Transfer' ? 'building-bank' : (selectedMethod === 'USDT' ? 'circle-dollar-sign' : 'credit-card')))" class="w-5 h-5 sm:w-6 sm:h-6" :class="{
+                                <i data-lucide="wallet" class="w-5 h-5 sm:w-6 sm:h-6" :class="{
                                     'text-orange-400': selectedMethod === 'Bitcoin',
                                     'text-blue-400': selectedMethod === 'Ethereum',
-                                    'text-green-400': selectedMethod === 'Bank Transfer',
-                                    'text-blue-400': selectedMethod === 'USDT',
-                                    'text-gray-400': !['Bitcoin', 'Ethereum', 'Bank Transfer', 'USDT'].includes(selectedMethod)
+                                    'text-green-400': selectedMethod === 'USDT',
+                                    'text-yellow-400': selectedMethod === 'BNB'
                                 }"></i>
                             </div>
                             <div class="flex-1 text-center sm:text-left">
                                 <h3 class="font-semibold text-white text-base sm:text-lg" x-text="selectedMethod + ' Withdrawal'"></h3>
-                                <p class="text-xs sm:text-sm text-gray-300 mt-1" x-text="'You have selected ' + selectedMethod + ' as your preferred withdrawal method.'"></p>
+                                <p class="text-xs sm:text-sm text-gray-300 mt-1">Your withdrawal will be processed within 24-48 hours after verification.</p>
                                 <div class="mt-3 flex items-center justify-center sm:justify-start gap-2 text-xs text-blue-400">
                                     <i data-lucide="shield-check" class="w-3 h-3 sm:w-4 sm:h-4"></i>
                                     <span>Secure & encrypted transaction</span>
@@ -901,9 +976,19 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full inline-flex justify-center items-center gap-2 sm:gap-3 py-3 sm:py-4 px-4 sm:px-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-sm sm:text-base">
-                        <i data-lucide="arrow-right" class="h-4 w-4 sm:h-5 sm:w-5"></i>
-                        <span>Proceed to Withdrawal</span>
+                    <button type="submit" :disabled="submitting || !selectedMethod || !amount || !walletAddress" class="w-full inline-flex justify-center items-center gap-2 sm:gap-3 py-3 sm:py-4 px-4 sm:px-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                        <template x-if="submitting">
+                            <div class="flex items-center">
+                                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                                Processing...
+                            </div>
+                        </template>
+                        <template x-if="!submitting">
+                            <span class="flex items-center gap-2">
+                                <i data-lucide="send" class="h-4 w-4 sm:h-5 sm:w-5"></i>
+                                Submit Withdrawal Request
+                            </span>
+                        </template>
                     </button>
                 </form>
             </div>

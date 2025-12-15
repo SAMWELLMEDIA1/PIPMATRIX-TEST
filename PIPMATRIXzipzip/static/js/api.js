@@ -91,10 +91,16 @@ const api = {
             });
         },
 
-        async withdraw(amount, paymentMethod, walletAddress) {
+        async withdraw(amount, paymentMethod, walletAddress, cryptoType = null, cryptoNetwork = null) {
             return api.request('/withdraw', {
                 method: 'POST',
-                body: { amount, payment_method: paymentMethod, wallet_address: walletAddress }
+                body: { 
+                    amount, 
+                    payment_method: paymentMethod, 
+                    wallet_address: walletAddress,
+                    crypto_type: cryptoType,
+                    crypto_network: cryptoNetwork
+                }
             });
         },
 
