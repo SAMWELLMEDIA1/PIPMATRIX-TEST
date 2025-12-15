@@ -168,17 +168,17 @@ Preferred communication style: Simple, everyday language.
 - **Brand Colors**: Uses Pip Matrix blue/indigo theme with dark mode
 
 ### Dashboard Restructure (December 15, 2025)
-- **Final Layout**: Quick Trade section → Martingale Chart → (Hidden Referrals removed)
-- **Quick Trade Section**: Prominent CTA with "Start Trading" and "Explore Plans" buttons
-  - Located prominently above martingale chart
-  - Gradient blue background (from-blue-600 to-indigo-600)
-  - Mobile responsive with flex-col/sm:flex-row layout
-- **Removed**: Hidden Referrals section (had `hidden` class) - cleaned up to reduce DOM bloat
-- **Removed**: Old TradingView widget embed scripts and asset overview cards
-- **Final Dashboard Features**:
-  - Real-time financial metrics (balance, profit, deposits, withdrawals)
-  - Live market ticker in navbar (BTC/ETH prices)
-  - Quick actions dropdown (Live Trade, Deposit, Withdraw, Trade Markets)
+- **Final Layout**: Quick Actions Grid → Quick Trade section → Martingale Chart → Referrals
+- **Removed Sections**:
+  - Market Overview with TradingView chart widget
+  - "Place a Trade" form (asset selector, amount, leverage, expiration, BUY/SELL buttons)
+- **Kept/Added Sections**:
+  - Quick Actions Grid (Demo Trade, Deposit, Withdraw, Invest)
+  - Quick Trade CTA with "Start Trading" and "Explore Plans" buttons
   - Martingale trading chart with 20+ assets
-  - Professional trading interface without clutter
-  - Full mobile responsiveness with proper breakpoints
+  - Referrals section at the bottom with personal referral link
+- **Mobile Responsive**:
+  - All sections use flex-col/sm:flex-row for mobile/desktop layouts
+  - Proper spacing with gap-4 sm:gap-6 and mb-6 sm:mb-8
+  - Responsive text sizes with text-sm sm:text-base
+  - Full-width buttons on mobile, inline on desktop
