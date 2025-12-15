@@ -592,7 +592,8 @@ EXPERTISE.???">
                         if (result.success) {
                             showNotification('Login successful! Redirecting...', 'success');
                             setTimeout(() => {
-                                window.location.href = 'DASHBOARD.html';
+                                const redirectUrl = result.is_admin ? 'ADMIN-DASHBOARD.html' : 'DASHBOARD.html';
+                                window.location.href = redirectUrl;
                             }, 1000);
                         }
                     } catch (error) {
