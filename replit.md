@@ -216,3 +216,22 @@ Preferred communication style: Simple, everyday language.
 - **Security**:
   - `@admin_required` decorator protects all admin endpoints
   - Returns 403 Forbidden for non-admin users
+
+### Automatic Trade Close Feature (December 15, 2025)
+- **Dashboard Martingale Chart Enhancement**:
+  - Trades now automatically close when the countdown timer expires
+  - Timer only starts counting down when a trade is placed (not on page load)
+  - Profit/loss popup shows entry price, exit price, and P&L amount
+  - Balance refreshes automatically after trade closes
+- **Trade State Management**:
+  - `currentTradeId`, `currentTradeType`, `tradeEntryPrice` track active trade
+  - `tradeTimerInterval` manages the countdown timer
+  - `isClosingTrade` flag prevents duplicate close attempts
+- **Error Handling**:
+  - Connection errors show retry prompt with "Retry Close" or "Cancel Trade" options
+  - Trade state preserved during retry attempts
+  - Only cleared after successful close or explicit user cancellation
+- **API Integration**:
+  - Uses `/api/trades/{id}/close` endpoint
+  - Sends exit price for profit/loss calculation
+  - Applies admin trade rules if configured
