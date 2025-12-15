@@ -309,12 +309,14 @@ function userData() {
         transactions: [],
         notifications: [],
         depositHistory: [],
+        trades: [],
         notificationCount: 0,
         
         async init() {
             await this.loadUserData();
             await this.loadNotifications();
             await this.loadDepositHistory();
+            await this.loadTrades();
         },
         
         async loadNotifications() {
@@ -339,6 +341,18 @@ function userData() {
             } catch (error) {
                 console.error('Failed to load deposit history:', error);
                 this.depositHistory = [];
+            }
+        },
+        
+        async loadTrades() {
+            try {
+                const data = await api.request('/trades?demo=false');
+                if (data.success && data.trades) {
+                    this.trades = data.trades;
+                }
+            } catch (error) {
+                console.error('Failed to load trades:', error);
+                this.trades = [];
             }
         },
         
@@ -386,6 +400,15 @@ function userData() {
                 } else {
                     showNotification('Error loading user data. Please refresh.', 'error');
                 }
+            }
+        },
+        
+        async handleLogout() {
+            try {
+                await api.auth.logout();
+                window.location.href = 'LOGIN.html';
+            } catch (e) {
+                window.location.href = 'LOGIN.html';
             }
         }
     };

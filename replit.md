@@ -1,237 +1,62 @@
 # Pip Matrix Trading Platform
 
 ## Overview
-
-Pip Matrix is a full-stack cryptocurrency and trading platform that allows users to manage investments across multiple asset classes including crypto, forex, stocks, ETFs, and real estate. The platform features user authentication, deposit/withdrawal management via cryptocurrency payments, demo trading, bot trading, copy trading, loan applications, and referral systems.
+Pip Matrix is a full-stack cryptocurrency and trading platform designed to allow users to manage investments across various asset classes, including crypto, forex, stocks, ETFs, and real estate. The platform aims to provide a comprehensive trading experience with features such as user authentication, cryptocurrency-based deposit/withdrawal management, demo trading, bot trading, copy trading, loan applications, and a referral system. Its ambition is to offer a unified solution for diverse investment needs, catering to both novice and experienced traders.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Frontend Architecture
-- **Technology**: Static HTML pages with Tailwind CSS for styling and Alpine.js for reactive UI components
-- **Design Pattern**: Multi-page application (MPA) with each feature having its own HTML page
-- **Styling Approach**: Dark mode by default using Tailwind's class-based dark mode strategy with custom color palette (primary indigo tones)
-- **UI Components**: Uses SweetAlert2 for notifications/modals, Lucide icons for iconography
-- **State Management**: localStorage for theme persistence, Alpine.js for page-level reactive state
+### Frontend
+- **Technology Stack**: Static HTML pages, Tailwind CSS for styling, Alpine.js for reactive UI.
+- **Design Principles**: Multi-page application (MPA) architecture, dark mode by default with a custom indigo color palette, mobile-responsive design.
+- **UI Components**: SweetAlert2 for notifications, Lucide and FontAwesome for iconography, Google Fonts (Inter).
+- **State Management**: `localStorage` for theme persistence, Alpine.js for page-level reactivity.
 
-### Backend Architecture
-- **Framework**: Flask (Python) with Flask-Login for session management
-- **API Design**: RESTful JSON API endpoints prefixed with `/api/`
-- **Authentication**: Session-based authentication using Flask-Login with password hashing via Werkzeug
-- **File Serving**: Flask serves static HTML files directly, with a simple HTTP server fallback (server.py)
+### Backend
+- **Framework**: Flask (Python).
+- **API**: RESTful JSON API endpoints prefixed with `/api/`.
+- **Authentication**: Session-based using Flask-Login with Werkzeug for password hashing.
+- **File Serving**: Flask serves static HTML and assets.
 
-### Database Layer
-- **ORM**: SQLAlchemy with Flask-SQLAlchemy extension
-- **Database**: PostgreSQL (configured via DATABASE_URL environment variable)
-- **Connection Pooling**: Uses `pool_pre_ping` for connection health checks
+### Database
+- **ORM**: SQLAlchemy with Flask-SQLAlchemy.
+- **Database**: PostgreSQL (configured via `DATABASE_URL`).
+- **Connection Management**: `pool_pre_ping` for connection health checks.
 
 ### Data Models
-- **User**: Core user entity with authentication, profile data, and relationships
-- **Account**: Financial account with balance tracking (live and demo)
-- **Transaction**: Deposits, withdrawals, and transfers
-- **Investment**: Investment packages and plans
-- **Trade**: Trading positions and history
-- **Loan**: Loan applications and status
-- **CopyTrading/BotTrading**: Automated trading features
-- **Referral**: User referral tracking
-- **SupportTicket**: Customer support system
-- **Notification**: User notifications
+Key entities include `User`, `Account` (live/demo balances), `Transaction` (deposits/withdrawals), `Investment`, `Trade`, `Loan`, `CopyTrading`, `BotTrading`, `Referral`, `SupportTicket`, `Notification`, `TradeRule` (admin-defined profit/loss rules), and `Subscription`.
 
-### Crypto Payment System
-- **Supported Currencies**: BTC, ETH, BNB, SOL, DOGE, USDT (TRC20), XRP
-- **QR Code Generation**: Dynamic QR codes using Python qrcode library
-- **Wallet Addresses**: Hardcoded in backend (CRYPTO_WALLETS dictionary in app.py)
-- **Payment Flow**: User selects crypto → displays wallet + QR → user submits TXID + receipt → admin approval
-- **Bank Transfer**: Currently under maintenance with professional UI message directing users to cryptocurrency
-
-### File Upload Handling
-- **Location**: `uploads/` directory
-- **Max Size**: 16MB limit configured in Flask
-- **Use Case**: Payment receipts/screenshots for deposit verification
+### Core Features & Implementations
+- **Crypto Payment System**: Supports BTC, ETH, BNB, SOL, DOGE, USDT (TRC20), XRP. Features dynamic QR code generation, network display, TXID submission, and optional receipt upload. Admin approval for deposits and withdrawals.
+- **Trading Systems**:
+    - **Demo Trading**: Virtual balance, asset selection (crypto, stocks, forex), trade configuration (amount, leverage, order type), real-time trade summary, and account reset.
+    - **Live Trading**: Real-money trading with balance validation, warning confirmations, and integration with the deposit system.
+    - **Martingale Trading Chart**: Custom canvas-based chart on the dashboard with multiple asset types, timeframes, simulated real-time price updates, market sentiment, payout display, and trade timer. Trades automatically close upon timer expiry, calculating profit/loss based on entry/exit prices and admin-defined rules.
+- **Admin Dashboard**: Secure, tab-based interface with admin authentication. Provides statistics, user management, new signup tracking, and comprehensive tools for managing deposits, withdrawals, subscriptions, and defining trade profit/loss rules.
+- **Account History**: Consolidated view for all trades (demo and live) and a dedicated tab for live trade history with detailed insights.
+- **File Uploads**: Handles payment receipts up to 16MB in the `uploads/` directory.
 
 ## External Dependencies
 
-### Frontend CDN Libraries
-- **Tailwind CSS**: Utility-first CSS framework (cdn.tailwindcss.com)
-- **Alpine.js**: Lightweight reactive JavaScript framework
-- **SweetAlert2**: Modal and notification library
-- **Lucide Icons**: Icon library
-- **FontAwesome**: Additional icons
-- **Google Fonts**: Inter font family
+### Frontend Libraries (CDN)
+-   Tailwind CSS
+-   Alpine.js
+-   SweetAlert2
+-   Lucide Icons
+-   FontAwesome
+-   Google Fonts (Inter)
 
 ### Backend Python Packages
-- **Flask**: Web framework
-- **Flask-SQLAlchemy**: Database ORM integration
-- **Flask-Login**: User session management
-- **Werkzeug**: Password hashing and security utilities
-- **qrcode**: QR code generation for crypto payments
-- **Pillow** (implied): Image processing for QR codes
+-   Flask
+-   Flask-SQLAlchemy
+-   Flask-Login
+-   Werkzeug
+-   qrcode
 
 ### Database
-- **PostgreSQL**: Primary database, connection string via `DATABASE_URL` environment variable
+-   PostgreSQL
 
 ### External Services
-- **None currently integrated**: The platform is self-contained without third-party API integrations for trading data or payment processing
-
-## Recent Updates (December 11, 2025)
-
-### Demo Trading System
-- **DEMO.html**: Demo dashboard with $100,000 virtual balance, "Start Demo Trade" button redirects to DEMO-START.html
-- **DEMO-START.html**: Full demo trading interface with:
-  - User data from API (name, initial) instead of dummy data
-  - Asset selection: 12 cryptocurrencies, 6 stocks, 3 forex pairs
-  - Trade configuration: amount ($1-$100,000), leverage (1x-100x), order type (buy/sell)
-  - Real-time trade summary: position size, max risk calculations
-  - Demo account reset functionality
-  - SweetAlert2 modals for trade execution and confirmation
-  - Mobile-responsive with bottom navigation bar
-  - Local navigation links (not external URLs)
-  - Green color scheme to differentiate from live trading (blue)
-
-### Investment Pages Connected to Deposit Portal
-- **STOCK.html, CRYPTO.html, REALESTATE.html**: All "Invest" buttons now redirect to DEPOSIT.html with query parameters
-- **Query Parameters**: source (stock/crypto/realestate), plan (plan name), amount (investment amount)
-- **Plan Names**:
-  - Stock: Starter, Growth, Premium, Elite
-  - Crypto: Starter, Growth, Basic, Standard, Premium, Elite
-  - Real Estate: Starter, Growth, Premium, Elite
-- **Implementation**: JavaScript goToDeposit() function replaces form submission, uses Alpine.js for amount binding
-- **Unified Flow**: Users select plan → enter amount → click "Invest" → redirected to deposit portal with pre-filled info
-
-### Comprehensive Crypto Payment System Implementation
-- **Rebuilt DEPOSIT.html** with 3-step crypto deposit flow: select cryptocurrency → enter amount & view wallet → submit transaction proof
-- **Dynamic QR Code Generation** for all 7 wallet addresses using server-side qrcode library
-- **7 Active Cryptocurrencies**:
-  - Bitcoin (BTC) - Segwit address
-  - Ethereum (ETH) - ERC20
-  - BNB - BNB Smart Chain
-  - Solana (SOL) - SPL token standard
-  - Dogecoin (DOGE) - Dogecoin network
-  - USDT - Tron (TRC20)
-  - XRP - XRP Ledger
-- **Enhanced Features**: Network display prevents wrong-chain deposits, TXID capture for tracking, optional receipt upload (JPG/PNG/GIF/PDF up to 10MB)
-- **Bank Transfer Option**: Added with professional "Under Maintenance" modal that directs users to cryptocurrency deposits
-- **Real Wallet Addresses**: All production wallet addresses configured (no placeholder data)
-- **Deposit History**: Real-time display of all user deposits with status tracking (pending/completed/failed)
-
-## Recent Updates (December 13, 2025)
-
-### Dashboard Data & UI Improvements
-- **Real Data Integration**: Dashboard now uses Alpine.js bindings for all financial metrics:
-  - Account Balance: `x-text="balance"`
-  - Total Profit: `x-text="totalProfit"`
-  - Total Deposits: `x-text="totalDeposits"`
-  - Total Withdrawals: `x-text="totalWithdrawals"`
-  - Earnings: `x-text="totalProfit"` (renamed from "Bonus")
-- **Removed Hardcoded Values**: Eliminated fake BTC balance display and all static dollar amounts
-- **Logo Size Updates**: All navbar logos updated from `h-8 w-auto` to `h-10 sm:h-12 w-auto` for better visibility and responsive sizing
-- **Live Trading Validation**: Backend properly validates balance before trades (app.py lines 631-633)
-
-### Demo Trading Improvements
-- **Orange Reset Account Button Fixed**: Changed from form POST to Alpine.js @click handler that properly calls the API and resets demo balance to $10,000
-- **Combined Trade History**: New `/api/trades/all-history` endpoint returns both demo and live trades with account_type field
-- **DEMO-HISTORY.html Updated**: 
-  - Now shows ALL trades (both demo and live) instead of just demo trades
-  - Added "Account" column with DEMO/LIVE badges (green for demo, blue for live)
-  - Stats section now shows Demo Trades and Live Trades counts separately
-  - Updated page title to "Trade History" 
-  - Empty state messaging updated to reflect all trades
-
-### Live Trading Implementation (December 13, 2025)
-- **LIVE-START.html Created**: Full live trading interface for real money trading
-  - Blue color scheme to differentiate from demo trading (green)
-  - Uses real account balance from `/api/user/profile`
-  - Submits trades to `/api/trades` with `is_demo: false`
-  - Balance validation before trade execution
-  - Insufficient balance prompts redirect to deposit page
-  - Warning confirmation before executing live trades
-  - "Deposit Funds" button instead of demo reset
-- **Dashboard Quick Trade Updated**: Added "Start Live Trade" link in Quick Trade dropdown
-- **Trading Flow**: Users can now trade with real money via LIVE-START.html
-
-## Recent Updates (December 14, 2025)
-
-### Martingale Trading Chart (Pocket Option Style)
-- **Custom Canvas-Based Chart**: Added to DASHBOARD.html replacing TradingView mini widgets
-- **Chart Types**: Toggle between Line, Candlestick, and Area charts
-- **Assets Supported**: BTC/USD, ETH/USD, EUR/USD, GBP/USD, XAU/USD, SOL/USD, BNB/USD, ADA/USD, and 14+ more crypto/forex/commodity assets
-- **Timeframe Selector**: 5s, 15s, 30s, 1m, 5m, 15m options
-- **Real-Time Animation**: Simulated price updates with realistic volatility per asset
-- **Market Sentiment**: Visual buy/sell percentage indicator
-- **Payout Display**: Dynamic payout percentage (88-95%) per asset
-- **Trade Timer**: Countdown timer for trade duration
-- **Integration**: Directly connects to `/api/trades` endpoint for live trade execution
-- **Mobile Responsive**: Fully responsive design for all screen sizes
-- **Brand Colors**: Uses Pip Matrix blue/indigo theme with dark mode
-
-### Dashboard Restructure (December 15, 2025)
-- **Final Layout**: Quick Actions Grid → Quick Trade section → Martingale Chart → Referrals
-- **Removed Sections**:
-  - Market Overview with TradingView chart widget
-  - "Place a Trade" form (asset selector, amount, leverage, expiration, BUY/SELL buttons)
-- **Kept/Added Sections**:
-  - Quick Actions Grid (Demo Trade, Deposit, Withdraw, Invest)
-  - Quick Trade CTA with "Start Trading" and "Explore Plans" buttons
-  - Martingale trading chart with 20+ assets
-  - Referrals section at the bottom with personal referral link
-- **Mobile Responsive**:
-  - All sections use flex-col/sm:flex-row for mobile/desktop layouts
-  - Proper spacing with gap-4 sm:gap-6 and mb-6 sm:mb-8
-  - Responsive text sizes with text-sm sm:text-base
-  - Full-width buttons on mobile, inline on desktop
-
-### Admin Dashboard Implementation (December 15, 2025)
-- **New Data Models**:
-  - `TradeRule`: Admin-defined profit/loss rules for assets with time ranges
-  - `Subscription`: Tracks BOT, Premium Signals, Investment subscription payments
-- **Admin Authentication**:
-  - Login: pipmatrixadmin@gmail.com / PIP-MATRIX@2025
-  - ADMIN-LOGIN.html: Dedicated admin login page with red theme
-  - ADMIN-DASHBOARD.html: Full admin panel with tab-based navigation
-- **Admin API Endpoints**:
-  - `/api/admin/stats`: Dashboard statistics (users, pending deposits/withdrawals)
-  - `/api/admin/users`: List all platform users with balances
-  - `/api/admin/new-signups`: Recent user registrations
-  - `/api/admin/deposits`: View/accept/reject pending deposits
-  - `/api/admin/withdrawals`: View/approve/reject pending withdrawals
-  - `/api/admin/subscriptions`: View/approve subscription payments
-  - `/api/admin/trade-rules`: CRUD for trade profit/loss rules
-- **Trade Rules System**:
-  - Admin can set profit/loss percentage for specific assets
-  - Rules can apply to specific time ranges (e.g., 5:00am-5:10am)
-  - Rules can apply "all time" for any trade on that asset
-  - Affects both demo and live account trades
-  - Positive percentage = profit, negative = loss
-- **Deposit Management**:
-  - View pending deposits with user info, amount, crypto type, TXID
-  - Accept: Credits user's live account balance immediately
-  - Reject: Notifies user with reason
-- **Withdrawal Management**:
-  - View pending withdrawals with user info, amount, wallet address
-  - Approve: Deducts from user balance and processes
-  - Reject: Notifies user with reason
-- **Security**:
-  - `@admin_required` decorator protects all admin endpoints
-  - Returns 403 Forbidden for non-admin users
-
-### Automatic Trade Close Feature (December 15, 2025)
-- **Dashboard Martingale Chart Enhancement**:
-  - Trades now automatically close when the countdown timer expires
-  - Timer only starts counting down when a trade is placed (not on page load)
-  - Profit/loss popup shows entry price, exit price, and P&L amount
-  - Balance refreshes automatically after trade closes
-- **Trade State Management**:
-  - `currentTradeId`, `currentTradeType`, `tradeEntryPrice` track active trade
-  - `tradeTimerInterval` manages the countdown timer
-  - `isClosingTrade` flag prevents duplicate close attempts
-- **Error Handling**:
-  - Connection errors show retry prompt with "Retry Close" or "Cancel Trade" options
-  - Trade state preserved during retry attempts
-  - Only cleared after successful close or explicit user cancellation
-- **API Integration**:
-  - Uses `/api/trades/{id}/close` endpoint
-  - Sends exit price for profit/loss calculation
-  - Applies admin trade rules if configured
+-   None currently integrated for external trading data or payment gateways; the platform relies on direct crypto wallet interactions.
