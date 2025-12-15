@@ -182,3 +182,37 @@ Preferred communication style: Simple, everyday language.
   - Proper spacing with gap-4 sm:gap-6 and mb-6 sm:mb-8
   - Responsive text sizes with text-sm sm:text-base
   - Full-width buttons on mobile, inline on desktop
+
+### Admin Dashboard Implementation (December 15, 2025)
+- **New Data Models**:
+  - `TradeRule`: Admin-defined profit/loss rules for assets with time ranges
+  - `Subscription`: Tracks BOT, Premium Signals, Investment subscription payments
+- **Admin Authentication**:
+  - Login: pipmatrixadmin@gmail.com / PIP-MATRIX@2025
+  - ADMIN-LOGIN.html: Dedicated admin login page with red theme
+  - ADMIN-DASHBOARD.html: Full admin panel with tab-based navigation
+- **Admin API Endpoints**:
+  - `/api/admin/stats`: Dashboard statistics (users, pending deposits/withdrawals)
+  - `/api/admin/users`: List all platform users with balances
+  - `/api/admin/new-signups`: Recent user registrations
+  - `/api/admin/deposits`: View/accept/reject pending deposits
+  - `/api/admin/withdrawals`: View/approve/reject pending withdrawals
+  - `/api/admin/subscriptions`: View/approve subscription payments
+  - `/api/admin/trade-rules`: CRUD for trade profit/loss rules
+- **Trade Rules System**:
+  - Admin can set profit/loss percentage for specific assets
+  - Rules can apply to specific time ranges (e.g., 5:00am-5:10am)
+  - Rules can apply "all time" for any trade on that asset
+  - Affects both demo and live account trades
+  - Positive percentage = profit, negative = loss
+- **Deposit Management**:
+  - View pending deposits with user info, amount, crypto type, TXID
+  - Accept: Credits user's live account balance immediately
+  - Reject: Notifies user with reason
+- **Withdrawal Management**:
+  - View pending withdrawals with user info, amount, wallet address
+  - Approve: Deducts from user balance and processes
+  - Reject: Notifies user with reason
+- **Security**:
+  - `@admin_required` decorator protects all admin endpoints
+  - Returns 403 Forbidden for non-admin users
