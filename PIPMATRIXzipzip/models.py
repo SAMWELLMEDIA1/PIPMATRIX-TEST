@@ -176,3 +176,32 @@ class Notification(db.Model):
     type = db.Column(db.String(50), default='info')
     read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class TradeRule(db.Model):
+    __tablename__ = 'trade_rules'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    asset = db.Column(db.String(50), nullable=False)
+    start_time = db.Column(db.Time, nullable=True)
+    end_time = db.Column(db.Time, nullable=True)
+    profit_percentage = db.Column(db.Float, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    apply_all_time = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class Subscription(db.Model):
+    __tablename__ = 'subscriptions'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    subscription_type = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(50), default='pending')
+    payment_method = db.Column(db.String(100))
+    txid = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    activated_at = db.Column(db.DateTime)
+    expires_at = db.Column(db.DateTime)
+    
+    user = db.relationship('User', backref=db.backref('subscriptions', lazy=True))

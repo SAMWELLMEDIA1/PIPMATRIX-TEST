@@ -3,7 +3,7 @@ import io
 import base64
 from flask import Flask, request, jsonify, session, redirect, url_for, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from models import db, User, Account, Transaction, Investment, Trade, Loan, CopyTrading, BotTrading, Referral, SupportTicket, Notification
+from models import db, User, Account, Transaction, Investment, Trade, Loan, CopyTrading, BotTrading, Referral, SupportTicket, Notification, TradeRule, Subscription
 from datetime import datetime, timedelta
 import secrets
 import qrcode
@@ -167,11 +167,13 @@ def login():
         return jsonify({
             'success': True,
             'message': 'Login successful',
+            'is_admin': user.is_admin,
             'user': {
                 'id': user.id,
                 'username': user.username,
                 'email': user.email,
-                'full_name': user.full_name
+                'full_name': user.full_name,
+                'is_admin': user.is_admin
             }
         })
     
@@ -1158,6 +1160,486 @@ def get_all_trade_history():
             'win_rate': (win_count / len(trades) * 100) if trades else 0
         }
     })
+
+def admin_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            return jsonify({'success': False, 'message': 'Admin access required'}), 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/api/admin/stats', methods=['GET'])
+@login_required
+@admin_required
+def get_admin_stats():
+    total_users = User.query.filter_by(is_admin=False).count()
+    new_users_today = User.query.filter(
+        User.created_at >= datetime.utcnow().replace(hour=0, minute=0, second=0),
+        User.is_admin == False
+    ).count()
+    pending_deposits = Transaction.query.filter_by(type='deposit', status='pending').count()
+    pending_withdrawals = Transaction.query.filter_by(type='withdrawal', status='pending').count()
+    pending_subscriptions = Subscription.query.filter_by(status='pending').count()
+    active_trade_rules = TradeRule.query.filter_by(is_active=True).count()
+    
+    return jsonify({
+        'success': True,
+        'stats': {
+            'total_users': total_users,
+            'new_users_today': new_users_today,
+            'pending_deposits': pending_deposits,
+            'pending_withdrawals': pending_withdrawals,
+            'pending_subscriptions': pending_subscriptions,
+            'active_trade_rules': active_trade_rules
+        }
+    })
+
+@app.route('/api/admin/users', methods=['GET'])
+@login_required
+@admin_required
+def get_admin_users():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    
+    users = User.query.filter_by(is_admin=False).order_by(User.created_at.desc()).paginate(page=page, per_page=per_page)
+    
+    return jsonify({
+        'success': True,
+        'users': [{
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'full_name': u.full_name,
+            'phone': u.phone,
+            'country': u.country,
+            'is_verified': u.is_verified,
+            'is_premium': u.is_premium,
+            'balance': u.account.balance if u.account else 0,
+            'demo_balance': u.account.demo_balance if u.account else 10000,
+            'created_at': u.created_at.isoformat() if u.created_at else None,
+            'last_login': u.last_login.isoformat() if u.last_login else None
+        } for u in users.items],
+        'total': users.total,
+        'pages': users.pages,
+        'current_page': page
+    })
+
+@app.route('/api/admin/new-signups', methods=['GET'])
+@login_required
+@admin_required
+def get_new_signups():
+    days = request.args.get('days', 7, type=int)
+    since = datetime.utcnow() - timedelta(days=days)
+    
+    new_users = User.query.filter(
+        User.created_at >= since,
+        User.is_admin == False
+    ).order_by(User.created_at.desc()).all()
+    
+    return jsonify({
+        'success': True,
+        'new_signups': [{
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'full_name': u.full_name,
+            'country': u.country,
+            'created_at': u.created_at.isoformat() if u.created_at else None
+        } for u in new_users]
+    })
+
+@app.route('/api/admin/deposits', methods=['GET'])
+@login_required
+@admin_required
+def get_admin_deposits():
+    status = request.args.get('status', 'pending')
+    
+    query = Transaction.query.filter_by(type='deposit')
+    if status != 'all':
+        query = query.filter_by(status=status)
+    
+    deposits = query.order_by(Transaction.created_at.desc()).all()
+    
+    result = []
+    for d in deposits:
+        user = User.query.get(d.user_id)
+        result.append({
+            'id': d.id,
+            'user_id': d.user_id,
+            'username': user.username if user else 'Unknown',
+            'email': user.email if user else 'Unknown',
+            'full_name': user.full_name if user else 'Unknown',
+            'amount': d.amount,
+            'crypto_type': d.crypto_type,
+            'crypto_network': d.crypto_network,
+            'txid': d.txid,
+            'wallet_address': d.wallet_address,
+            'receipt_filename': d.receipt_filename,
+            'status': d.status,
+            'reference': d.reference,
+            'created_at': d.created_at.isoformat() if d.created_at else None
+        })
+    
+    return jsonify({'success': True, 'deposits': result})
+
+@app.route('/api/admin/deposits/<int:deposit_id>/accept', methods=['POST'])
+@login_required
+@admin_required
+def accept_deposit(deposit_id):
+    deposit = Transaction.query.get(deposit_id)
+    if not deposit or deposit.type != 'deposit':
+        return jsonify({'success': False, 'message': 'Deposit not found'}), 404
+    
+    if deposit.status != 'pending':
+        return jsonify({'success': False, 'message': 'Deposit already processed'}), 400
+    
+    user = User.query.get(deposit.user_id)
+    if not user or not user.account:
+        return jsonify({'success': False, 'message': 'User account not found'}), 404
+    
+    user.account.balance += deposit.amount
+    user.account.total_deposits += deposit.amount
+    deposit.status = 'completed'
+    deposit.completed_at = datetime.utcnow()
+    
+    notification = Notification(
+        user_id=user.id,
+        title='Deposit Approved',
+        message=f'Your deposit of ${deposit.amount:,.2f} has been approved and credited to your account.',
+        type='success'
+    )
+    db.session.add(notification)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': f'Deposit of ${deposit.amount:,.2f} approved. User balance updated.'
+    })
+
+@app.route('/api/admin/deposits/<int:deposit_id>/reject', methods=['POST'])
+@login_required
+@admin_required
+def reject_deposit(deposit_id):
+    data = request.get_json() or {}
+    reason = data.get('reason', 'Deposit verification failed')
+    
+    deposit = Transaction.query.get(deposit_id)
+    if not deposit or deposit.type != 'deposit':
+        return jsonify({'success': False, 'message': 'Deposit not found'}), 404
+    
+    if deposit.status != 'pending':
+        return jsonify({'success': False, 'message': 'Deposit already processed'}), 400
+    
+    deposit.status = 'rejected'
+    deposit.admin_notes = reason
+    
+    notification = Notification(
+        user_id=deposit.user_id,
+        title='Deposit Rejected',
+        message=f'Your deposit of ${deposit.amount:,.2f} was rejected. Reason: {reason}',
+        type='error'
+    )
+    db.session.add(notification)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Deposit rejected'})
+
+@app.route('/api/admin/withdrawals', methods=['GET'])
+@login_required
+@admin_required
+def get_admin_withdrawals():
+    status = request.args.get('status', 'pending')
+    
+    query = Transaction.query.filter_by(type='withdrawal')
+    if status != 'all':
+        query = query.filter_by(status=status)
+    
+    withdrawals = query.order_by(Transaction.created_at.desc()).all()
+    
+    result = []
+    for w in withdrawals:
+        user = User.query.get(w.user_id)
+        result.append({
+            'id': w.id,
+            'user_id': w.user_id,
+            'username': user.username if user else 'Unknown',
+            'email': user.email if user else 'Unknown',
+            'full_name': user.full_name if user else 'Unknown',
+            'amount': w.amount,
+            'payment_method': w.payment_method,
+            'wallet_address': w.wallet_address,
+            'status': w.status,
+            'reference': w.reference,
+            'created_at': w.created_at.isoformat() if w.created_at else None
+        })
+    
+    return jsonify({'success': True, 'withdrawals': result})
+
+@app.route('/api/admin/withdrawals/<int:withdrawal_id>/approve', methods=['POST'])
+@login_required
+@admin_required
+def approve_withdrawal(withdrawal_id):
+    withdrawal = Transaction.query.get(withdrawal_id)
+    if not withdrawal or withdrawal.type != 'withdrawal':
+        return jsonify({'success': False, 'message': 'Withdrawal not found'}), 404
+    
+    if withdrawal.status != 'pending':
+        return jsonify({'success': False, 'message': 'Withdrawal already processed'}), 400
+    
+    user = User.query.get(withdrawal.user_id)
+    if not user or not user.account:
+        return jsonify({'success': False, 'message': 'User account not found'}), 404
+    
+    if user.account.balance < withdrawal.amount:
+        return jsonify({'success': False, 'message': 'User has insufficient balance'}), 400
+    
+    user.account.balance -= withdrawal.amount
+    user.account.total_withdrawals += withdrawal.amount
+    withdrawal.status = 'completed'
+    withdrawal.completed_at = datetime.utcnow()
+    
+    notification = Notification(
+        user_id=user.id,
+        title='Withdrawal Approved',
+        message=f'Your withdrawal of ${withdrawal.amount:,.2f} has been approved and processed.',
+        type='success'
+    )
+    db.session.add(notification)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Withdrawal approved and processed'})
+
+@app.route('/api/admin/withdrawals/<int:withdrawal_id>/reject', methods=['POST'])
+@login_required
+@admin_required
+def reject_withdrawal(withdrawal_id):
+    data = request.get_json() or {}
+    reason = data.get('reason', 'Withdrawal request denied')
+    
+    withdrawal = Transaction.query.get(withdrawal_id)
+    if not withdrawal or withdrawal.type != 'withdrawal':
+        return jsonify({'success': False, 'message': 'Withdrawal not found'}), 404
+    
+    if withdrawal.status != 'pending':
+        return jsonify({'success': False, 'message': 'Withdrawal already processed'}), 400
+    
+    withdrawal.status = 'rejected'
+    withdrawal.admin_notes = reason
+    
+    notification = Notification(
+        user_id=withdrawal.user_id,
+        title='Withdrawal Rejected',
+        message=f'Your withdrawal of ${withdrawal.amount:,.2f} was rejected. Reason: {reason}',
+        type='error'
+    )
+    db.session.add(notification)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Withdrawal rejected'})
+
+@app.route('/api/admin/subscriptions', methods=['GET'])
+@login_required
+@admin_required
+def get_admin_subscriptions():
+    status = request.args.get('status', 'pending')
+    
+    query = Subscription.query
+    if status != 'all':
+        query = query.filter_by(status=status)
+    
+    subscriptions = query.order_by(Subscription.created_at.desc()).all()
+    
+    result = []
+    for s in subscriptions:
+        user = User.query.get(s.user_id)
+        result.append({
+            'id': s.id,
+            'user_id': s.user_id,
+            'username': user.username if user else 'Unknown',
+            'email': user.email if user else 'Unknown',
+            'full_name': user.full_name if user else 'Unknown',
+            'subscription_type': s.subscription_type,
+            'amount': s.amount,
+            'payment_method': s.payment_method,
+            'txid': s.txid,
+            'status': s.status,
+            'created_at': s.created_at.isoformat() if s.created_at else None
+        })
+    
+    return jsonify({'success': True, 'subscriptions': result})
+
+@app.route('/api/admin/subscriptions/<int:sub_id>/approve', methods=['POST'])
+@login_required
+@admin_required
+def approve_subscription(sub_id):
+    sub = Subscription.query.get(sub_id)
+    if not sub:
+        return jsonify({'success': False, 'message': 'Subscription not found'}), 404
+    
+    sub.status = 'active'
+    sub.activated_at = datetime.utcnow()
+    sub.expires_at = datetime.utcnow() + timedelta(days=30)
+    
+    user = User.query.get(sub.user_id)
+    if user:
+        if sub.subscription_type.lower() in ['premium', 'premium signals']:
+            user.is_premium = True
+    
+    notification = Notification(
+        user_id=sub.user_id,
+        title='Subscription Activated',
+        message=f'Your {sub.subscription_type} subscription has been activated.',
+        type='success'
+    )
+    db.session.add(notification)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Subscription approved'})
+
+@app.route('/api/admin/trade-rules', methods=['GET'])
+@login_required
+@admin_required
+def get_trade_rules():
+    rules = TradeRule.query.order_by(TradeRule.created_at.desc()).all()
+    
+    return jsonify({
+        'success': True,
+        'rules': [{
+            'id': r.id,
+            'asset': r.asset,
+            'start_time': r.start_time.strftime('%H:%M') if r.start_time else None,
+            'end_time': r.end_time.strftime('%H:%M') if r.end_time else None,
+            'profit_percentage': r.profit_percentage,
+            'is_active': r.is_active,
+            'apply_all_time': r.apply_all_time,
+            'created_at': r.created_at.isoformat() if r.created_at else None
+        } for r in rules]
+    })
+
+@app.route('/api/admin/trade-rules', methods=['POST'])
+@login_required
+@admin_required
+def create_trade_rule():
+    data = request.get_json()
+    
+    asset = data.get('asset')
+    profit_percentage = data.get('profit_percentage', 0)
+    apply_all_time = data.get('apply_all_time', False)
+    start_time_str = data.get('start_time')
+    end_time_str = data.get('end_time')
+    
+    if not asset:
+        return jsonify({'success': False, 'message': 'Asset is required'}), 400
+    
+    start_time = None
+    end_time = None
+    
+    if not apply_all_time:
+        if start_time_str:
+            try:
+                start_time = datetime.strptime(start_time_str, '%H:%M').time()
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Invalid start time format. Use HH:MM'}), 400
+        if end_time_str:
+            try:
+                end_time = datetime.strptime(end_time_str, '%H:%M').time()
+            except ValueError:
+                return jsonify({'success': False, 'message': 'Invalid end time format. Use HH:MM'}), 400
+    
+    rule = TradeRule(
+        asset=asset.upper(),
+        start_time=start_time,
+        end_time=end_time,
+        profit_percentage=profit_percentage,
+        apply_all_time=apply_all_time,
+        is_active=True
+    )
+    db.session.add(rule)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Trade rule created',
+        'rule_id': rule.id
+    })
+
+@app.route('/api/admin/trade-rules/<int:rule_id>', methods=['PUT'])
+@login_required
+@admin_required
+def update_trade_rule(rule_id):
+    rule = TradeRule.query.get(rule_id)
+    if not rule:
+        return jsonify({'success': False, 'message': 'Rule not found'}), 404
+    
+    data = request.get_json()
+    
+    if 'asset' in data:
+        rule.asset = data['asset'].upper()
+    if 'profit_percentage' in data:
+        rule.profit_percentage = data['profit_percentage']
+    if 'is_active' in data:
+        rule.is_active = data['is_active']
+    if 'apply_all_time' in data:
+        rule.apply_all_time = data['apply_all_time']
+    if 'start_time' in data and data['start_time']:
+        try:
+            rule.start_time = datetime.strptime(data['start_time'], '%H:%M').time()
+        except ValueError:
+            pass
+    if 'end_time' in data and data['end_time']:
+        try:
+            rule.end_time = datetime.strptime(data['end_time'], '%H:%M').time()
+        except ValueError:
+            pass
+    
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Trade rule updated'})
+
+@app.route('/api/admin/trade-rules/<int:rule_id>', methods=['DELETE'])
+@login_required
+@admin_required
+def delete_trade_rule(rule_id):
+    rule = TradeRule.query.get(rule_id)
+    if not rule:
+        return jsonify({'success': False, 'message': 'Rule not found'}), 404
+    
+    db.session.delete(rule)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Trade rule deleted'})
+
+@app.route('/api/admin/create-admin', methods=['POST'])
+def create_initial_admin():
+    admin_email = 'pipmatrixadmin@gmail.com'
+    admin_password = 'PIP-MATRIX@2025'
+    
+    existing = User.query.filter_by(email=admin_email).first()
+    if existing:
+        if not existing.is_admin:
+            existing.is_admin = True
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Existing user upgraded to admin'})
+        return jsonify({'success': True, 'message': 'Admin already exists'})
+    
+    admin = User(
+        username='pipmatrixadmin',
+        email=admin_email,
+        full_name='Pip Matrix Admin',
+        is_admin=True,
+        is_verified=True
+    )
+    admin.set_password(admin_password)
+    db.session.add(admin)
+    db.session.flush()
+    
+    account = Account(user_id=admin.id, balance=0, demo_balance=0)
+    db.session.add(account)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Admin account created'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
