@@ -1005,7 +1005,7 @@
                 </div>
             </div>
 
-            <div class="p-4 sm:p-6 lg:p-8" x-data="{ withdrawals: [] }">
+            <div class="p-4 sm:p-6 lg:p-8" x-data="withdrawalHistory()" x-init="loadWithdrawals()">
                 <template x-if="withdrawals.length === 0">
                     <div class="text-center py-12">
                         <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>

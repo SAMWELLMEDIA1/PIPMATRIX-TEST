@@ -562,6 +562,34 @@ function cryptoPayment() {
     };
 }
 
+function withdrawalHistory() {
+    return {
+        withdrawals: [],
+        loading: false,
+        
+        async loadWithdrawals() {
+            this.loading = true;
+            try {
+                const data = await api.transactions.getAll(1, 'withdrawal');
+                if (data.success && data.transactions) {
+                    this.withdrawals = data.transactions.map(t => ({
+                        id: t.id,
+                        amount: t.amount,
+                        date: new Date(t.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}),
+                        time: new Date(t.created_at).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}),
+                        method: t.crypto_type || t.payment_method || 'Crypto',
+                        status: t.status === 'approved' ? 'Completed' : (t.status === 'rejected' ? 'Rejected' : 'Pending')
+                    }));
+                }
+            } catch (error) {
+                console.error('Failed to load withdrawals:', error);
+                this.withdrawals = [];
+            }
+            this.loading = false;
+        }
+    };
+}
+
 window.api = api;
 window.checkAuth = checkAuth;
 window.requireAuth = requireAuth;
@@ -570,3 +598,4 @@ window.formatDate = formatDate;
 window.showNotification = showNotification;
 window.userData = userData;
 window.cryptoPayment = cryptoPayment;
+window.withdrawalHistory = withdrawalHistory;

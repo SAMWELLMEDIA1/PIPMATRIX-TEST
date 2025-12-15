@@ -1260,12 +1260,12 @@
                                 <div class="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-colors duration-300">
                                     <div class="flex items-start justify-between mb-3">
                                         <div class="flex items-center space-x-3">
-                                            <div :class="trade.type === 'BUY' ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20' : 'bg-gradient-to-br from-red-500/20 to-pink-500/20'" class="w-10 h-10 rounded-xl flex items-center justify-center">
-                                                <i :class="trade.type === 'BUY' ? 'text-green-500' : 'text-red-500'" data-lucide="trending-up" class="w-5 h-5"></i>
+                                            <div :class="trade.trade_type === 'BUY' ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20' : 'bg-gradient-to-br from-red-500/20 to-pink-500/20'" class="w-10 h-10 rounded-xl flex items-center justify-center">
+                                                <i :class="trade.trade_type === 'BUY' ? 'text-green-500' : 'text-red-500'" data-lucide="trending-up" class="w-5 h-5"></i>
                                             </div>
                                             <div>
-                                                <div class="text-white font-medium" x-text="trade.asset"></div>
-                                                <div class="text-slate-400 text-sm" x-text="trade.type"></div>
+                                                <div class="text-white font-medium" x-text="trade.symbol"></div>
+                                                <div class="text-slate-400 text-sm" x-text="trade.trade_type"></div>
                                             </div>
                                         </div>
                                         <span :class="trade.profit_loss >= 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium">
@@ -1308,9 +1308,9 @@
                                     <tbody class="divide-y divide-gray-700">
                                         <template x-for="trade in trades" :key="trade.id">
                                             <tr class="hover:bg-gray-800/50 transition-colors duration-300">
-                                                <td class="px-6 py-4 text-white font-medium" x-text="trade.asset"></td>
+                                                <td class="px-6 py-4 text-white font-medium" x-text="trade.symbol"></td>
                                                 <td class="px-6 py-4">
-                                                    <span :class="trade.type === 'BUY' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" x-text="trade.type"></span>
+                                                    <span :class="trade.trade_type === 'BUY' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" x-text="trade.trade_type"></span>
                                                 </td>
                                                 <td class="px-6 py-4 text-white font-medium" x-text="'$' + parseFloat(trade.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></td>
                                                 <td class="px-6 py-4" :class="trade.profit_loss >= 0 ? 'text-green-400' : 'text-red-400'" x-text="(trade.profit_loss >= 0 ? '+' : '') + '$' + parseFloat(trade.profit_loss).toLocaleString('en-US', {minimumFractionDigits: 2})"></td>
