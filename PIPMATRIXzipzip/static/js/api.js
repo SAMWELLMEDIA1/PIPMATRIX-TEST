@@ -168,6 +168,12 @@ const api = {
                 method: 'POST',
                 body: { exit_price: exitPrice }
             });
+        },
+
+        async delete(tradeId) {
+            return api.request(`/trades/${tradeId}`, {
+                method: 'DELETE'
+            });
         }
     },
 

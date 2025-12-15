@@ -867,7 +867,7 @@
   </div>
 
   <!-- Main content placeholder -->
-  <div class="flex-1 ml-0 md:ml-64 p-4 pb-20 md:pb-4">
+  <div class="flex-1 ml-0 md:ml-64 p-4 pb-20 md:pb-4" x-data="tradeHistory()" x-init="init()">
     <!-- Your main dashboard content goes here -->
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-3 sm:p-6">
     <div class="max-w-7xl mx-auto">
@@ -875,462 +875,198 @@
         <div class="mb-6 sm:mb-10">
             <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
                 <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 flex items-center justify-center backdrop-blur-sm">
-                    <i data-lucide="credit-card" class="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 dark:text-blue-400"></i>
+                    <i data-lucide="trending-up" class="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 dark:text-blue-400"></i>
                 </div>
                 <div class="text-center sm:text-left">
                     <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light text-slate-800 dark:text-white mb-1 sm:mb-2">
-                        Transaction History
+                        Live Trade History
                     </h1>
                     <p class="text-slate-500 dark:text-slate-400 font-light text-base sm:text-lg">
-                        Monitor all your financial activities
+                        View and manage your trading activity
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- Modern Glass Card -->
-        <div class="bg-gray-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-gray-700 shadow-xl floating-animation">
-            <!-- Navigation Tabs -->
-            <div x-data="{ activeTab: 'deposits' }" class="w-full">
-                <!-- Mobile-First Tab Navigation -->
-                <div class="flex flex-col sm:flex-row gap-2 p-2 mb-6 sm:mb-8 bg-gray-800 rounded-xl sm:rounded-2xl backdrop-blur-sm">
-                    <button @click="activeTab = 'deposits'"
-                            :class="activeTab === 'deposits' ? 'bg-gray-700 text-white shadow-lg' : 'text-slate-300 hover:text-white hover:bg-gray-700/50'"
-                            class="w-full sm:w-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-medium transition-all duration-300 flex items-center justify-center sm:justify-start space-x-2 sm:space-x-3 transform hover:scale-105">
-                        <i data-lucide="arrow-down-circle" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                        <span class="text-sm sm:text-base">Deposits</span>
-                    </button>
-                    <button @click="activeTab = 'withdrawals'"
-                            :class="activeTab === 'withdrawals' ? 'bg-gray-700 text-white shadow-lg' : 'text-slate-300 hover:text-white hover:bg-gray-700/50'"
-                            class="w-full sm:w-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-medium transition-all duration-300 flex items-center justify-center sm:justify-start space-x-2 sm:space-x-3 transform hover:scale-105">
-                        <i data-lucide="arrow-up-circle" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                        <span class="text-sm sm:text-base">Withdrawals</span>
-                    </button>
-                    <button @click="activeTab = 'others'"
-                            :class="activeTab === 'others' ? 'bg-gray-700 text-white shadow-lg' : 'text-slate-300 hover:text-white hover:bg-gray-700/50'"
-                            class="w-full sm:w-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-medium transition-all duration-300 flex items-center justify-center sm:justify-start space-x-2 sm:space-x-3 transform hover:scale-105">
-                        <i data-lucide="activity" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                        <span class="text-sm sm:text-base">Others</span>
-                    </button>
-                    <button @click="activeTab = 'trades'"
-                            :class="activeTab === 'trades' ? 'bg-gray-700 text-white shadow-lg' : 'text-slate-300 hover:text-white hover:bg-gray-700/50'"
-                            class="w-full sm:w-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-medium transition-all duration-300 flex items-center justify-center sm:justify-start space-x-2 sm:space-x-3 transform hover:scale-105">
-                        <i data-lucide="trending-up" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                        <span class="text-sm sm:text-base">Trades</span>
-                    </button>
-                </div>
+        <div class="bg-gray-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-gray-700 shadow-xl">
+            <div class="w-full">
 
-                <!-- Tab Content -->
+                <!-- Trade History Content -->
                 <div class="p-2 sm:p-4 lg:p-6">
-                    <!-- Deposits Tab -->
-                    <div x-show="activeTab === 'deposits'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
-                        <div class="mb-4 sm:mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
-                            <div class="text-center lg:text-left">
-                                <h3 class="text-xl sm:text-2xl font-light text-white mb-1 sm:mb-2">Deposit History</h3>
-                                <p class="text-slate-400 font-light text-sm sm:text-base">Track your deposit transactions</p>
-                            </div>
-                            <div class="relative">
-                                <input type="text" placeholder="Search deposits..." class="w-full lg:w-80 pl-10 sm:pl-12 pr-4 sm:pr-6 py-2 sm:py-3 bg-gray-800 border border-gray-600 rounded-xl sm:rounded-2xl text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base">
-                                <i data-lucide="search" class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400"></i>
-                            </div>
+                    <!-- Loading State -->
+                    <template x-if="loading">
+                        <div class="text-center py-12">
+                            <div class="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                            <p class="text-gray-400">Loading trades...</p>
                         </div>
+                    </template>
 
-                        <!-- Mobile Card View -->
-                        <div class="block lg:hidden space-y-4">
-                            <template x-if="deposits.length === 0">
-                                <div class="text-center py-12">
-                                    <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
-                                    <p class="text-gray-400">No deposits found</p>
-                                </div>
-                            </template>
-                            <template x-for="deposit in deposits" :key="deposit.id">
-                                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-colors duration-300">
-                                    <div class="flex items-start justify-between mb-3">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center">
-                                                <i data-lucide="arrow-down" class="w-5 h-5 text-emerald-500"></i>
-                                            </div>
-                                            <div>
-                                                <div class="text-white font-medium" x-text="'$' + parseFloat(deposit.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
-                                                <div class="text-slate-400 text-sm">Deposit</div>
-                                            </div>
+                    <!-- Mobile Card View -->
+                    <div x-show="!loading" class="block lg:hidden space-y-4">
+                        <template x-if="trades.length === 0">
+                            <div class="text-center py-12">
+                                <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
+                                <p class="text-gray-400">No trades found</p>
+                                <p class="text-gray-500 text-sm mt-2">Start trading to see your history here</p>
+                            </div>
+                        </template>
+                        <template x-for="trade in trades" :key="trade.id">
+                            <div class="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-colors duration-300">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div :class="trade.trade_type === 'BUY' ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20' : 'bg-gradient-to-br from-red-500/20 to-pink-500/20'" class="w-10 h-10 rounded-xl flex items-center justify-center">
+                                            <i :class="trade.trade_type === 'BUY' ? 'text-green-500' : 'text-red-500'" data-lucide="trending-up" class="w-5 h-5"></i>
                                         </div>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
-                                              :class="deposit.status === 'completed' ? 'bg-emerald-900/30 text-emerald-400' : deposit.status === 'pending' ? 'bg-amber-900/30 text-amber-400' : 'bg-red-900/30 text-red-400'">
-                                            <div class="w-1.5 h-1.5 rounded-full mr-1.5"
-                                                 :class="deposit.status === 'completed' ? 'bg-emerald-500' : deposit.status === 'pending' ? 'bg-amber-500' : 'bg-red-500'"></div>
-                                            <span x-text="deposit.status.charAt(0).toUpperCase() + deposit.status.slice(1)"></span>
-                                        </span>
+                                        <div>
+                                            <div class="text-white font-medium" x-text="trade.symbol"></div>
+                                            <div class="text-slate-400 text-sm" x-text="trade.trade_type"></div>
+                                        </div>
+                                    </div>
+                                    <span :class="trade.profit_loss >= 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium">
+                                        <span x-text="(trade.profit_loss >= 0 ? '+' : '') + '$' + parseFloat(trade.profit_loss || 0).toLocaleString('en-US', {minimumFractionDigits: 2})"></span>
+                                    </span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-slate-400">Amount</span>
+                                        <span class="text-white" x-text="'$' + parseFloat(trade.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></span>
                                     </div>
                                     <div class="flex justify-between items-center text-sm">
-                                        <span class="text-slate-400">Payment Mode</span>
-                                        <span class="text-blue-400 bg-blue-900/30 px-2 py-1 rounded-lg" x-text="deposit.payment_method"></span>
+                                        <span class="text-slate-400">Closed</span>
+                                        <span class="text-slate-300" x-text="trade.closed_at ? new Date(trade.closed_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : 'Open'"></span>
                                     </div>
-                                    <div class="mt-2 text-xs text-slate-500" x-text="new Date(deposit.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})"></div>
                                 </div>
-                            </template>
-                        </div>
-
-                        <!-- Desktop Table View -->
-                        <div class="hidden lg:block overflow-x-auto">
-                            <template x-if="deposits.length === 0">
-                                <div class="text-center py-12">
-                                    <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
-                                    <p class="text-gray-400">No deposits found</p>
+                                <div class="mt-3 pt-3 border-t border-gray-700">
+                                    <button @click="deleteTrade(trade.id)" 
+                                            :disabled="trade.status === 'open'"
+                                            :class="trade.status === 'open' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-900/30'"
+                                            class="w-full flex items-center justify-center space-x-2 px-3 py-2 text-red-400 rounded-lg transition-colors">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        <span class="text-sm" x-text="trade.status === 'open' ? 'Cannot delete open trade' : 'Delete Trade'"></span>
+                                    </button>
                                 </div>
-                            </template>
-                            <template x-if="deposits.length > 0">
-                                <table class="w-full">
-                                    <thead>
-                                        <tr class="border-b border-gray-700">
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Amount</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Payment Mode</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-700">
-                                        <template x-for="deposit in deposits" :key="deposit.id">
-                                            <tr class="hover:bg-gray-800/50 transition-colors duration-300">
-                                                <td class="px-6 py-4">
-                                                    <div class="flex items-center space-x-3">
-                                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center">
-                                                            <i data-lucide="arrow-down" class="w-5 h-5 text-emerald-500"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="text-white font-medium" x-text="'$' + parseFloat(deposit.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
-                                                            <div class="text-slate-400 text-sm">Deposit</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-900/30 text-blue-400" x-text="deposit.payment_method"></span>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                                                          :class="deposit.status === 'completed' ? 'bg-emerald-900/30 text-emerald-400' : deposit.status === 'pending' ? 'bg-amber-900/30 text-amber-400' : 'bg-red-900/30 text-red-400'">
-                                                        <div class="w-2 h-2 rounded-full mr-2"
-                                                             :class="deposit.status === 'completed' ? 'bg-emerald-500' : deposit.status === 'pending' ? 'bg-amber-500' : 'bg-red-500'"></div>
-                                                        <span x-text="deposit.status.charAt(0).toUpperCase() + deposit.status.slice(1)"></span>
-                                                    </span>
-                                                </td>
-                                                <td class="px-6 py-4 text-slate-300 font-light" x-text="new Date(deposit.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})"></td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </template>
-                        </div>
-
-                        <!-- Deposits Info -->
-                        <div class="mt-6 text-center" x-show="deposits.length > 0">
-                            <p class="text-sm text-gray-400" x-text="deposits.length + ' deposit(s) found'"></p>
-                        </div>
+                            </div>
+                        </template>
                     </div>
 
-                    <!-- Withdrawals Tab -->
-                    <div x-show="activeTab === 'withdrawals'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
-                        <div class="mb-4 sm:mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
-                            <div class="text-center lg:text-left">
-                                <h3 class="text-xl sm:text-2xl font-light text-white mb-1 sm:mb-2">Withdrawal History</h3>
-                                <p class="text-slate-400 font-light text-sm sm:text-base">Track your withdrawal transactions</p>
+                    <!-- Desktop Table View -->
+                    <div x-show="!loading" class="hidden lg:block overflow-x-auto">
+                        <template x-if="trades.length === 0">
+                            <div class="text-center py-12">
+                                <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
+                                <p class="text-gray-400">No trades found</p>
+                                <p class="text-gray-500 text-sm mt-2">Start trading to see your history here</p>
                             </div>
-                            <div class="relative">
-                                <input type="text" placeholder="Search withdrawals..." class="w-full lg:w-80 pl-10 sm:pl-12 pr-4 sm:pr-6 py-2 sm:py-3 bg-gray-800 border border-gray-600 rounded-xl sm:rounded-2xl text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base">
-                                <i data-lucide="search" class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400"></i>
-                            </div>
-                        </div>
-
-                        <!-- Mobile Card View -->
-                        <div class="block lg:hidden space-y-4">
-                            <template x-if="withdrawals.length === 0">
-                                <div class="text-center py-12">
-                                    <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
-                                    <p class="text-gray-400">No withdrawals found</p>
-                                </div>
-                            </template>
-                            <template x-for="withdrawal in withdrawals" :key="withdrawal.id">
-                                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-colors duration-300">
-                                    <div class="flex items-start justify-between mb-3">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500/20 to-pink-500/20 flex items-center justify-center">
-                                                <i data-lucide="arrow-up" class="w-5 h-5 text-red-500"></i>
-                                            </div>
-                                            <div>
-                                                <div class="text-white font-medium" x-text="'$' + parseFloat(withdrawal.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
-                                                <div class="text-slate-400 text-sm">Withdrawal</div>
-                                            </div>
-                                        </div>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
-                                              :class="withdrawal.status === 'completed' ? 'bg-emerald-900/30 text-emerald-400' : withdrawal.status === 'pending' ? 'bg-amber-900/30 text-amber-400' : 'bg-red-900/30 text-red-400'">
-                                            <div class="w-1.5 h-1.5 rounded-full mr-1.5"
-                                                 :class="withdrawal.status === 'completed' ? 'bg-emerald-500' : withdrawal.status === 'pending' ? 'bg-amber-500' : 'bg-red-500'"></div>
-                                            <span x-text="withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)"></span>
-                                        </span>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <div class="flex justify-between items-center text-sm">
-                                            <span class="text-slate-400">Total Deducted</span>
-                                            <span class="text-white" x-text="'$' + parseFloat(withdrawal.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></span>
-                                        </div>
-                                        <div class="flex justify-between items-center text-sm">
-                                            <span class="text-slate-400">Payment Mode</span>
-                                            <span class="text-blue-400 bg-blue-900/30 px-2 py-1 rounded-lg" x-text="withdrawal.payment_method"></span>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 text-xs text-slate-500" x-text="new Date(withdrawal.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})"></div>
-                                </div>
-                            </template>
-                        </div>
-
-                        <!-- Desktop Table View -->
-                        <div class="hidden lg:block overflow-x-auto">
-                            <template x-if="withdrawals.length === 0">
-                                <div class="text-center py-12">
-                                    <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
-                                    <p class="text-gray-400">No withdrawals found</p>
-                                </div>
-                            </template>
-                            <template x-if="withdrawals.length > 0">
-                                <table class="w-full">
-                                    <thead>
-                                        <tr class="border-b border-gray-700">
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Amount</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Total Deducted</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Payment Mode</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
+                        </template>
+                        <template x-if="trades.length > 0">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-700">
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Asset</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Type</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Amount</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Profit/Loss</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Closed</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-700">
+                                    <template x-for="trade in trades" :key="trade.id">
+                                        <tr class="hover:bg-gray-800/50 transition-colors duration-300">
+                                            <td class="px-6 py-4 text-white font-medium" x-text="trade.symbol"></td>
+                                            <td class="px-6 py-4">
+                                                <span :class="trade.trade_type === 'BUY' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" x-text="trade.trade_type"></span>
+                                            </td>
+                                            <td class="px-6 py-4 text-white font-medium" x-text="'$' + parseFloat(trade.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></td>
+                                            <td class="px-6 py-4" :class="trade.profit_loss >= 0 ? 'text-green-400' : 'text-red-400'" x-text="(trade.profit_loss >= 0 ? '+' : '') + '$' + parseFloat(trade.profit_loss || 0).toLocaleString('en-US', {minimumFractionDigits: 2})"></td>
+                                            <td class="px-6 py-4">
+                                                <span :class="trade.status === 'closed' ? 'bg-emerald-900/30 text-emerald-400' : 'bg-amber-900/30 text-amber-400'" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium" x-text="trade.status"></span>
+                                            </td>
+                                            <td class="px-6 py-4 text-slate-300 font-light" x-text="trade.closed_at ? new Date(trade.closed_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}) : '-'"></td>
+                                            <td class="px-6 py-4">
+                                                <button @click="deleteTrade(trade.id)" 
+                                                        :disabled="trade.status === 'open'"
+                                                        :class="trade.status === 'open' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-900/30 hover:text-red-300'"
+                                                        class="flex items-center space-x-1 px-3 py-1.5 text-red-400 rounded-lg transition-colors">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                    <span class="text-sm">Delete</span>
+                                                </button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-700">
-                                        <template x-for="withdrawal in withdrawals" :key="withdrawal.id">
-                                            <tr class="hover:bg-gray-800/50 transition-colors duration-300">
-                                                <td class="px-6 py-4">
-                                                    <div class="flex items-center space-x-3">
-                                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500/20 to-pink-500/20 flex items-center justify-center">
-                                                            <i data-lucide="arrow-up" class="w-5 h-5 text-red-500"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="text-white font-medium" x-text="'$' + parseFloat(withdrawal.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
-                                                            <div class="text-slate-400 text-sm">Withdrawal</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <div class="text-white font-medium" x-text="'$' + parseFloat(withdrawal.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
-                                                    <div class="text-slate-400 text-sm">Including fees</div>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-900/30 text-blue-400" x-text="withdrawal.payment_method"></span>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                                                          :class="withdrawal.status === 'completed' ? 'bg-emerald-900/30 text-emerald-400' : withdrawal.status === 'pending' ? 'bg-amber-900/30 text-amber-400' : 'bg-red-900/30 text-red-400'">
-                                                        <div class="w-2 h-2 rounded-full mr-2"
-                                                             :class="withdrawal.status === 'completed' ? 'bg-emerald-500' : withdrawal.status === 'pending' ? 'bg-amber-500' : 'bg-red-500'"></div>
-                                                        <span x-text="withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)"></span>
-                                                    </span>
-                                                </td>
-                                                <td class="px-6 py-4 text-slate-300 font-light" x-text="new Date(withdrawal.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})"></td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </template>
-                        </div>
-
-                        <!-- Withdrawals Info -->
-                        <div class="mt-6 text-center" x-show="withdrawals.length > 0">
-                            <p class="text-sm text-gray-400" x-text="withdrawals.length + ' withdrawal(s) found'"></p>
-                        </div>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
                     </div>
 
-                    <!-- Other Transactions Tab -->
-                    <div x-show="activeTab === 'others'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
-                        <div class="mb-4 sm:mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
-                            <div class="text-center lg:text-left">
-                                <h3 class="text-xl sm:text-2xl font-light text-white mb-1 sm:mb-2">Other Transactions</h3>
-                                <p class="text-slate-400 font-light text-sm sm:text-base">Additional transaction history</p>
-                            </div>
-                            <div class="relative">
-                                <input type="text" placeholder="Search transactions..." class="w-full lg:w-80 pl-10 sm:pl-12 pr-4 sm:pr-6 py-2 sm:py-3 bg-gray-800 border border-gray-600 rounded-xl sm:rounded-2xl text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base">
-                                <i data-lucide="search" class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400"></i>
-                            </div>
-                        </div>
-
-                        <!-- Mobile Card View -->
-                        <div class="block lg:hidden space-y-4">
-                            <template x-if="transactions.length === 0">
-                                <div class="text-center py-12">
-                                    <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
-                                    <p class="text-gray-400">No transactions found</p>
-                                </div>
-                            </template>
-                            <template x-for="transaction in transactions" :key="transaction.id">
-                                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-colors duration-300">
-                                    <div class="flex items-start justify-between mb-3">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-blue-500/20 flex items-center justify-center">
-                                                <i data-lucide="activity" class="w-5 h-5 text-indigo-500"></i>
-                                            </div>
-                                            <div>
-                                                <div class="text-white font-medium" x-text="transaction.type"></div>
-                                                <div class="text-slate-400 text-sm">Transaction</div>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-white font-medium" x-text="'$' + parseFloat(transaction.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-between items-center text-sm">
-                                        <span class="text-slate-400">Description</span>
-                                        <span class="text-slate-300" x-text="transaction.description || '-'"></span>
-                                    </div>
-                                    <div class="mt-2 text-xs text-slate-500" x-text="new Date(transaction.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})"></div>
-                                </div>
-                            </template>
-                        </div>
-
-                        <!-- Desktop Table View -->
-                        <div class="hidden lg:block overflow-x-auto">
-                            <template x-if="transactions.length === 0">
-                                <div class="text-center py-12">
-                                    <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
-                                    <p class="text-gray-400">No transactions found</p>
-                                </div>
-                            </template>
-                            <template x-if="transactions.length > 0">
-                                <table class="w-full">
-                                    <thead>
-                                        <tr class="border-b border-gray-700">
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Type</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Amount</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Description</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-700">
-                                        <template x-for="transaction in transactions" :key="transaction.id">
-                                            <tr class="hover:bg-gray-800/50 transition-colors duration-300">
-                                                <td class="px-6 py-4">
-                                                    <div class="flex items-center space-x-3">
-                                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-blue-500/20 flex items-center justify-center">
-                                                            <i data-lucide="activity" class="w-5 h-5 text-indigo-500"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="text-white font-medium" x-text="transaction.type"></div>
-                                                            <div class="text-slate-400 text-sm">Transaction</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="px-6 py-4 text-white font-medium" x-text="'$' + parseFloat(transaction.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></td>
-                                                <td class="px-6 py-4 text-slate-300" x-text="transaction.description || '-'"></td>
-                                                <td class="px-6 py-4 text-slate-300 font-light" x-text="new Date(transaction.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})"></td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </template>
-                        </div>
-
-                        <!-- Transactions Info -->
-                        <div class="mt-6 text-center" x-show="transactions.length > 0">
-                            <p class="text-sm text-gray-400" x-text="transactions.length + ' transaction(s) found'"></p>
-                        </div>
-                    </div>
-
-                    <!-- Trades Tab -->
-                    <div x-show="activeTab === 'trades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
-                        <div class="mb-4 sm:mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
-                            <div class="text-center lg:text-left">
-                                <h3 class="text-xl sm:text-2xl font-light text-white mb-1 sm:mb-2">Trade History</h3>
-                                <p class="text-slate-400 font-light text-sm sm:text-base">Your live trading history</p>
-                            </div>
-                        </div>
-
-                        <!-- Mobile Card View -->
-                        <div class="block lg:hidden space-y-4">
-                            <template x-if="trades.length === 0">
-                                <div class="text-center py-12">
-                                    <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
-                                    <p class="text-gray-400">No trades found</p>
-                                </div>
-                            </template>
-                            <template x-for="trade in trades" :key="trade.id">
-                                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-colors duration-300">
-                                    <div class="flex items-start justify-between mb-3">
-                                        <div class="flex items-center space-x-3">
-                                            <div :class="trade.trade_type === 'BUY' ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20' : 'bg-gradient-to-br from-red-500/20 to-pink-500/20'" class="w-10 h-10 rounded-xl flex items-center justify-center">
-                                                <i :class="trade.trade_type === 'BUY' ? 'text-green-500' : 'text-red-500'" data-lucide="trending-up" class="w-5 h-5"></i>
-                                            </div>
-                                            <div>
-                                                <div class="text-white font-medium" x-text="trade.symbol"></div>
-                                                <div class="text-slate-400 text-sm" x-text="trade.trade_type"></div>
-                                            </div>
-                                        </div>
-                                        <span :class="trade.profit_loss >= 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium">
-                                            <span x-text="(trade.profit_loss >= 0 ? '+' : '') + '$' + parseFloat(trade.profit_loss).toLocaleString('en-US', {minimumFractionDigits: 2})"></span>
-                                        </span>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <div class="flex justify-between items-center text-sm">
-                                            <span class="text-slate-400">Amount</span>
-                                            <span class="text-white" x-text="'$' + parseFloat(trade.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></span>
-                                        </div>
-                                        <div class="flex justify-between items-center text-sm">
-                                            <span class="text-slate-400">Closed</span>
-                                            <span class="text-slate-300" x-text="new Date(trade.closed_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-
-                        <!-- Desktop Table View -->
-                        <div class="hidden lg:block overflow-x-auto">
-                            <template x-if="trades.length === 0">
-                                <div class="text-center py-12">
-                                    <i data-lucide="inbox" class="w-12 h-12 mx-auto text-gray-400 mb-4"></i>
-                                    <p class="text-gray-400">No trades found</p>
-                                </div>
-                            </template>
-                            <template x-if="trades.length > 0">
-                                <table class="w-full">
-                                    <thead>
-                                        <tr class="border-b border-gray-700">
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Asset</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Type</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Amount</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Profit/Loss</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Closed</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-700">
-                                        <template x-for="trade in trades" :key="trade.id">
-                                            <tr class="hover:bg-gray-800/50 transition-colors duration-300">
-                                                <td class="px-6 py-4 text-white font-medium" x-text="trade.symbol"></td>
-                                                <td class="px-6 py-4">
-                                                    <span :class="trade.trade_type === 'BUY' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" x-text="trade.trade_type"></span>
-                                                </td>
-                                                <td class="px-6 py-4 text-white font-medium" x-text="'$' + parseFloat(trade.amount).toLocaleString('en-US', {minimumFractionDigits: 2})"></td>
-                                                <td class="px-6 py-4" :class="trade.profit_loss >= 0 ? 'text-green-400' : 'text-red-400'" x-text="(trade.profit_loss >= 0 ? '+' : '') + '$' + parseFloat(trade.profit_loss).toLocaleString('en-US', {minimumFractionDigits: 2})"></td>
-                                                <td class="px-6 py-4 text-slate-300 font-light" x-text="new Date(trade.closed_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})"></td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </template>
-                        </div>
-
-                        <!-- Trades Info -->
-                        <div class="mt-6 text-center" x-show="trades.length > 0">
-                            <p class="text-sm text-gray-400" x-text="trades.length + ' trade(s) found'"></p>
-                        </div>
+                    <!-- Trades Info -->
+                    <div x-show="!loading && trades.length > 0" class="mt-6 text-center">
+                        <p class="text-sm text-gray-400" x-text="trades.length + ' trade(s) found'"></p>
                     </div>
                 </div>
             </div>
+
 <script>
-    // Initialize Lucide icons
+    function tradeHistory() {
+        return {
+            trades: [],
+            loading: true,
+            
+            async init() {
+                await this.loadTrades();
+            },
+            
+            async loadTrades() {
+                this.loading = true;
+                try {
+                    const data = await api.trades.getAll(false);
+                    if (data.trades) {
+                        this.trades = data.trades;
+                    }
+                } catch (error) {
+                    console.error('Failed to load trades:', error);
+                    this.trades = [];
+                }
+                this.loading = false;
+                this.$nextTick(() => lucide.createIcons());
+            },
+            
+            async deleteTrade(tradeId) {
+                const result = await Swal.fire({
+                    title: 'Delete Trade?',
+                    text: 'This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, delete it'
+                });
+                
+                if (result.isConfirmed) {
+                    try {
+                        const response = await api.trades.delete(tradeId);
+                        if (response.success) {
+                            this.trades = this.trades.filter(t => t.id !== tradeId);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: 'Trade has been removed from your history.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            Swal.fire('Error', response.message || 'Failed to delete trade', 'error');
+                        }
+                    } catch (error) {
+                        Swal.fire('Error', error.message || 'Failed to delete trade', 'error');
+                    }
+                }
+            }
+        };
+    }
+    
     lucide.createIcons();
 </script>
 
@@ -1388,9 +1124,9 @@
           }
 
           .gtranslate_wrapper_mobile_nav .gt_float_wrapper img {
-            width: 24px !important;
-            height: 24px !important;
-            border-radius: 4px !important;
+            width: 16px !important;
+            height: 16px !important;
+            border-radius: 3px !important;
             margin: 0 !important;
           }
 
@@ -1468,9 +1204,9 @@
           }
         </script>
 
-        <i data-lucide="globe" class="w-6 h-6 text-gray-500 group-hover:text-blue-600 transition-colors duration-200"></i>
+        <i data-lucide="globe" class="w-4 h-4 text-gray-500 group-hover:text-blue-600 transition-colors duration-200"></i>
       </div>
-      <span class="text-xs mt-1 text-gray-500 group-hover:text-blue-600">Language</span>
+      <span class="text-[10px] mt-0.5 text-gray-500 group-hover:text-blue-600">Lang</span>
     </div>
 
     <a href="DEPOSIT.html"

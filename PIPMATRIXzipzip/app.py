@@ -769,6 +769,25 @@ def close_trade(trade_id):
         'profit_loss': profit_loss
     })
 
+@app.route('/api/trades/<int:trade_id>', methods=['DELETE'])
+@login_required
+def delete_trade(trade_id):
+    trade = Trade.query.filter_by(id=trade_id, user_id=current_user.id).first()
+    
+    if not trade:
+        return jsonify({'success': False, 'message': 'Trade not found'}), 404
+    
+    if trade.status == 'open':
+        return jsonify({'success': False, 'message': 'Cannot delete an open trade. Close it first.'}), 400
+    
+    db.session.delete(trade)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Trade deleted successfully'
+    })
+
 @app.route('/api/loans', methods=['GET'])
 @login_required
 def get_loans():
