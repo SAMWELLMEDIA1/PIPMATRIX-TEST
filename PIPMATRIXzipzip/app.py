@@ -625,8 +625,21 @@ def get_trades():
 def create_trade():
     data = request.get_json()
     is_demo = data.get('is_demo', False)
-    amount = data.get('amount', 0)
+    amount = float(data.get('amount', 0))
     symbol = data.get('symbol', 'Unknown')
+    entry_price = data.get('entry_price')
+    
+    # Ensure entry_price is a valid number, default to 1.0 if not provided
+    if entry_price is None or entry_price == '' or entry_price == 0:
+        # Provide realistic default prices based on asset
+        default_prices = {
+            'BTC/USD': 97500, 'ETH/USD': 3450, 'SOL/USD': 220, 'BNB/USD': 710,
+            'XRP/USD': 2.35, 'DOGE/USD': 0.42, 'ADA/USD': 1.05, 'EUR/USD': 1.052,
+            'GBP/USD': 1.265, 'XAU/USD': 2650, 'AAPL': 248, 'TSLA': 420
+        }
+        entry_price = default_prices.get(symbol, 100.0)
+    else:
+        entry_price = float(entry_price)
     
     if is_demo:
         if current_user.account.demo_balance < amount:
@@ -642,7 +655,7 @@ def create_trade():
         symbol=symbol,
         trade_type=data.get('trade_type'),
         amount=amount,
-        entry_price=data.get('entry_price'),
+        entry_price=entry_price,
         leverage=data.get('leverage', 1),
         is_demo=is_demo
     )
