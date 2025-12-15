@@ -605,6 +605,7 @@ def get_trades():
     trades = query.order_by(Trade.created_at.desc()).all()
     
     return jsonify({
+        'success': True,
         'trades': [{
             'id': t.id,
             'symbol': t.symbol,
