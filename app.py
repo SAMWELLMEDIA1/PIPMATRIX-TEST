@@ -21,9 +21,6 @@ db = SQLAlchemy(app)
 
 from models import User, Account, Transaction, Investment, Trade, Loan, CopyTrading, BotTrading, Referral, SupportTicket, Notification, TradeRule, Subscription
 
-with app.app_context():
-    db.create_all()
-
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_pre_ping': True}
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -1745,6 +1742,9 @@ def create_initial_admin():
     db.session.commit()
     
     return jsonify({'success': True, 'message': 'Admin account created'})
+
+with app.app_context():
+    db.create_all()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
