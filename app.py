@@ -107,10 +107,7 @@ def serve_static(filename):
 def serve_upload(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
-
+@app.route('/api/auth/register', methods=['POST'])
 def register():
     data = request.get_json()
     
@@ -1732,4 +1729,5 @@ def create_initial_admin():
     return jsonify({'success': True, 'message': 'Admin account created'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
