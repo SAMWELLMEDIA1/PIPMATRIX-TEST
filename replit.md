@@ -1,62 +1,143 @@
 # Pip Matrix Trading Platform
 
 ## Overview
-Pip Matrix is a full-stack cryptocurrency and trading platform designed to allow users to manage investments across various asset classes, including crypto, forex, stocks, ETFs, and real estate. The platform aims to provide a comprehensive trading experience with features such as user authentication, cryptocurrency-based deposit/withdrawal management, demo trading, bot trading, copy trading, loan applications, and a referral system. Its ambition is to offer a unified solution for diverse investment needs, catering to both novice and experienced traders.
+A full-stack trading platform built with Flask backend and HTML/Tailwind CSS frontend. The platform allows users to register, login, manage deposits/withdrawals, trade, and receive notifications for all their activities.
 
-## User Preferences
-Preferred communication style: Simple, everyday language.
+## Project Architecture
 
-## System Architecture
+### Backend (Python/Flask)
+- **app.py** - Main Flask application with all API endpoints
+- **models.py** - SQLAlchemy database models for users, accounts, transactions, trades, notifications, etc.
 
-### Frontend
-- **Technology Stack**: Static HTML pages, Tailwind CSS for styling, Alpine.js for reactive UI.
-- **Design Principles**: Multi-page application (MPA) architecture, dark mode by default with a custom indigo color palette, mobile-responsive design.
-- **UI Components**: SweetAlert2 for notifications, Lucide and FontAwesome for iconography, Google Fonts (Inter).
-- **State Management**: `localStorage` for theme persistence, Alpine.js for page-level reactivity.
+### Frontend (HTML/Tailwind CSS/Alpine.js)
+- **INDEX.html** - Landing page
+- **LOGIN.html** - User login page
+- **SIGNUP.html** - User registration page
+- **DASHBOARD.html** - Main user dashboard
+- **DEPOSIT.html** - Deposit funds page
+- **WITHDRAW.html** - Withdrawal page
+- **ACCOUNTHISTORY.html** - Transaction history
+- **PROFILE.html** - User profile management
+- And more trading-related pages (STOCK, CRYPTO, FOREX, etc.)
 
-### Backend
-- **Framework**: Flask (Python).
-- **API**: RESTful JSON API endpoints prefixed with `/api/`.
-- **Authentication**: Session-based using Flask-Login with Werkzeug for password hashing.
-- **File Serving**: Flask serves static HTML and assets.
+### Static Files
+- **static/js/api.js** - API wrapper for frontend to communicate with backend
+- **images/** - Logo and other images
 
-### Database
-- **ORM**: SQLAlchemy with Flask-SQLAlchemy.
-- **Database**: PostgreSQL (configured via `DATABASE_URL`).
-- **Connection Management**: `pool_pre_ping` for connection health checks.
+## API Endpoints
 
-### Data Models
-Key entities include `User`, `Account` (live/demo balances), `Transaction` (deposits/withdrawals), `Investment`, `Trade`, `Loan`, `CopyTrading`, `BotTrading`, `Referral`, `SupportTicket`, `Notification`, `TradeRule` (admin-defined profit/loss rules), and `Subscription`.
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/check` - Check authentication status
 
-### Core Features & Implementations
-- **Crypto Payment System**: Supports BTC, ETH, BNB, SOL, DOGE, USDT (TRC20), XRP. Features dynamic QR code generation, network display, TXID submission, and optional receipt upload. Admin approval for deposits and withdrawals.
-- **Trading Systems**:
-    - **Demo Trading**: Virtual balance, asset selection (crypto, stocks, forex), trade configuration (amount, leverage, order type), real-time trade summary, and account reset.
-    - **Live Trading**: Real-money trading with balance validation, warning confirmations, and integration with the deposit system.
-    - **Martingale Trading Chart**: Custom canvas-based chart on the dashboard with multiple asset types, timeframes, simulated real-time price updates, market sentiment, payout display, and trade timer. Trades automatically close upon timer expiry, calculating profit/loss based on entry/exit prices and admin-defined rules.
-- **Admin Dashboard**: Secure, tab-based interface with admin authentication. Provides statistics, user management, new signup tracking, and comprehensive tools for managing deposits, withdrawals, subscriptions, and defining trade profit/loss rules.
-- **Account History**: Consolidated view for all trades (demo and live) and a dedicated tab for live trade history with detailed insights.
-- **File Uploads**: Handles payment receipts up to 16MB in the `uploads/` directory.
+### User
+- `GET /api/user/profile` - Get user profile
+- `PUT /api/user/profile` - Update user profile
+- `GET /api/dashboard` - Get dashboard data
 
-## External Dependencies
+### Transactions
+- `GET /api/transactions` - Get user transactions (with optional type filter)
+- `POST /api/deposit` - Create deposit request
+- `POST /api/withdraw` - Create withdrawal request
+- `POST /api/transfer` - Transfer funds to another user
 
-### Frontend Libraries (CDN)
--   Tailwind CSS
--   Alpine.js
--   SweetAlert2
--   Lucide Icons
--   FontAwesome
--   Google Fonts (Inter)
+### Trading
+- `GET /api/trades` - Get user trades
+- `POST /api/trades` - Open new trade
+- `POST /api/trades/<id>/close` - Close trade
 
-### Backend Python Packages
--   Flask
--   Flask-SQLAlchemy
--   Flask-Login
--   Werkzeug
--   qrcode
+### Notifications
+- `GET /api/notifications` - Get user notifications
+- `POST /api/notifications/<id>/read` - Mark notification as read
+- `POST /api/notifications/read-all` - Mark all notifications as read
 
-### Database
--   PostgreSQL
+### Other
+- `GET /api/investments` - Get investments
+- `POST /api/investments` - Create investment
+- `GET /api/loans` - Get loans
+- `POST /api/loans` - Apply for loan
+- `GET /api/support` - Get support tickets
+- `POST /api/support` - Create support ticket
+- `GET /api/referral` - Get referral info
 
-### External Services
--   None currently integrated for external trading data or payment gateways; the platform relies on direct crypto wallet interactions.
+## Database Models
+- **User** - User accounts with authentication
+- **Account** - User financial account (balance, demo balance, etc.)
+- **Transaction** - Deposits, withdrawals, transfers
+- **Investment** - Investment plans
+- **Trade** - Trading positions
+- **Loan** - Loan applications
+- **CopyTrading** - Copy trading subscriptions
+- **BotTrading** - Bot trading configurations
+- **Referral** - Referral codes and bonuses
+- **SupportTicket** - Customer support tickets
+- **Notification** - User notifications
+
+## Key Features
+1. User registration and authentication with Flask-Login
+2. Dynamic balance tracking (starts at $0 for new users)
+3. Deposit and withdrawal system
+4. Trading functionality (live and demo accounts)
+5. Automatic notification generation for all user actions
+6. Support ticket system
+7. Referral system
+
+## Recent Changes
+
+### December 11, 2025 - Wallet Connection & Payment Enhancements
+- Created CONNECT.html with full wallet selection interface (40+ wallets)
+- All wallet images now loading from reliable CDN sources (MetaMask, Trust Wallet, Polygon, etc.)
+- Updated Dashboard "Connect Wallet" button to navigate to CONNECT.html
+- Wallet page includes search functionality, Bootstrap styling, and responsive grid layout
+- Fixed CSS/jQuery dependencies and added Bootstrap CDN integration
+- All wallet logos displaying with hover effects and active status indicators
+- Created shared `paymentModal.js` component for consistent payment method selection across pages
+- Updated BOT.html with payment modal - all 55 "Invest Now" buttons now open crypto payment selection modal
+- Updated PREMIUM.html with payment modal for subscription purchases
+- DEPOSIT.html now accepts URL parameters (crypto, source, amount, plan) for context-aware payment flows
+
+### Dashboard & Demo Account Fixes (December 11, 2025)
+- Fixed Premium Signals navbar link - now correctly routes to PREMIUM.html instead of DASHBOARD.html
+- Updated demo account balance to $100,000 (originally requested value) - fixed in both Alpine getter and JavaScript initialization
+- Demo Trade and Live Trade sections are API-driven (no hardcoded dummy data)
+
+### DEMO.html Cleanup (December 11, 2025)
+- Removed all dummy statistics cards (Total Trades: 65, Win Rate: 52.31%, Total P&L: -$3,431.83, Active Trades: 0)
+- Updated demo account balance to $100,000.00 (was $85,872.36)
+- Fixed "Switch to Live Trading" button to route to DASHBOARD.html (was STOCK.html)
+- All demo features are now clean, with real trading data pulled from API only
+
+### Dashboard Enhancement (December 11, 2025)
+- Added "Connect Wallet" button below Account Verified section
+- Button uses gradient styling (indigo to blue) matching platform theme
+- Links directly to CONNECT.html wallet selection page
+- Includes hover effects and scale animation for better UX
+
+### CONNECT.html Complete Redesign (December 11, 2025)
+- Full page redesign matching platform dark theme with gradient styling
+- 20+ wallet options displayed in responsive grid (Trust Wallet, MetaMask, Coinbase, etc.)
+- Search functionality to filter wallets
+- Complete modal system with multiple states:
+  - Loading state: 10-second animated spinner with "starting secure connection..." message
+  - Error state: Error message with "Try Again" and "Connect Manually" buttons
+  - Manual connection: Input field for 12/24 mnemonic words or private key
+  - Connecting state: 5-second animation showing wallet connection progress
+  - Connected state: Success confirmation with green checkmark
+- All animations include smooth fade-in/fade-out transitions
+- Modal has blur backdrop and centered positioning
+- Connected wallets display green "Connected" status and glow effect
+- Security badges and encrypted session messaging throughout
+- Fixed Premium Signals navbar links across 18+ HTML files (corrected from DASHBOARD.html to PREMIUM.html)
+- Payment flow routes users directly to specific cryptocurrency deposit pages with context preserved
+
+### Previous Changes
+- Added Notification model and API endpoints
+- Removed all hardcoded dummy data from frontend
+- Added automatic notification creation for deposits, withdrawals, and trades
+- Dashboard now loads notifications dynamically from API
+- All user data displays as empty/zero for new users until they perform actions
+
+## Running the Application
+The Flask server runs on port 5000 with the command: `python app.py`

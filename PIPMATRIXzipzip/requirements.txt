@@ -1,9 +1,0 @@
-Flask
-flask-login
-flask-sqlalchemy
-pillow
-psycopg2-binary
-qrcode
-werkzeug
-gunicorn
-python-dotenv

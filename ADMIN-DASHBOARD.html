@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: true }" :class="{ 'dark': darkMode }" class="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pip Matrix - Admin Dashboard</title>
+    <link rel="icon" type="image/jpeg" href="images/LOGO.jpeg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/LOGO.jpeg">
+    <link rel="apple-touch-icon" href="images/LOGO.jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: {
+                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
+                            400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+                            800: '#3730a3', 900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="min-h-screen bg-gray-900 text-white">
+    <div x-data="adminDashboard()" x-init="init()">
+        <nav class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                            <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">Admin Panel</span>
+                    </div>
+                    <button @click="logout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="users" class="w-5 h-5 text-blue-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold" x-text="stats.total_users">0</p>
+                            <p class="text-xs text-gray-400">Total Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-600/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="user-plus" class="w-5 h-5 text-green-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold" x-text="stats.new_users_today">0</p>
+                            <p class="text-xs text-gray-400">New Today</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-yellow-600/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="arrow-down-circle" class="w-5 h-5 text-yellow-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold" x-text="stats.pending_deposits">0</p>
+                            <p class="text-xs text-gray-400">Pending Deposits</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-orange-600/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="arrow-up-circle" class="w-5 h-5 text-orange-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold" x-text="stats.pending_withdrawals">0</p>
+                            <p class="text-xs text-gray-400">Pending Withdrawals</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-600/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="crown" class="w-5 h-5 text-purple-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold" x-text="stats.pending_subscriptions">0</p>
+                            <p class="text-xs text-gray-400">Pending Subs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 border border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-red-600/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="settings-2" class="w-5 h-5 text-red-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold" x-text="stats.active_trade_rules">0</p>
+                            <p class="text-xs text-gray-400">Active Rules</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button @click="activeTab = 'deposits'" :class="activeTab === 'deposits' ? 'bg-red-600' : 'bg-gray-700 hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Deposits
+                </button>
+                <button @click="activeTab = 'withdrawals'" :class="activeTab === 'withdrawals' ? 'bg-red-600' : 'bg-gray-700 hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Withdrawals
+                </button>
+                <button @click="activeTab = 'subscriptions'" :class="activeTab === 'subscriptions' ? 'bg-red-600' : 'bg-gray-700 hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Subscriptions
+                </button>
+                <button @click="activeTab = 'users'" :class="activeTab === 'users' ? 'bg-red-600' : 'bg-gray-700 hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Users
+                </button>
+                <button @click="activeTab = 'signups'" :class="activeTab === 'signups' ? 'bg-red-600' : 'bg-gray-700 hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    New Signups
+                </button>
+                <button @click="activeTab = 'rules'" :class="activeTab === 'rules' ? 'bg-red-600' : 'bg-gray-700 hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Trade Rules
+                </button>
+            </div>
+
+            <div x-show="activeTab === 'deposits'" class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Pending Deposits</h2>
+                    <select x-model="depositFilter" @change="loadDeposits()" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm">
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-700/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">User</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Amount</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Crypto</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">TXID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <template x-for="deposit in deposits" :key="deposit.id">
+                                <tr class="hover:bg-gray-700/30">
+                                    <td class="px-4 py-3">
+                                        <div>
+                                            <p class="font-medium" x-text="deposit.full_name || deposit.username"></p>
+                                            <p class="text-xs text-gray-400" x-text="deposit.email"></p>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 font-semibold text-green-400" x-text="'$' + deposit.amount.toLocaleString()"></td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs" x-text="deposit.crypto_type"></span>
+                                    </td>
+                                    <td class="px-4 py-3 text-xs text-gray-400 max-w-[150px] truncate" x-text="deposit.txid"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-400" x-text="formatDate(deposit.created_at)"></td>
+                                    <td class="px-4 py-3">
+                                        <span :class="{
+                                            'bg-yellow-600/20 text-yellow-400': deposit.status === 'pending',
+                                            'bg-green-600/20 text-green-400': deposit.status === 'completed',
+                                            'bg-red-600/20 text-red-400': deposit.status === 'rejected'
+                                        }" class="px-2 py-1 rounded text-xs capitalize" x-text="deposit.status"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <template x-if="deposit.status === 'pending'">
+                                            <div class="flex gap-2">
+                                                <button @click="acceptDeposit(deposit.id)" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 rounded text-xs font-medium transition-colors">Accept</button>
+                                                <button @click="rejectDeposit(deposit.id)" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded text-xs font-medium transition-colors">Reject</button>
+                                            </div>
+                                        </template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <template x-if="deposits.length === 0">
+                        <div class="p-8 text-center text-gray-400">No deposits found</div>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'withdrawals'" class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Pending Withdrawals</h2>
+                    <select x-model="withdrawalFilter" @change="loadWithdrawals()" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm">
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-700/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">User</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Amount</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Method</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Wallet</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <template x-for="withdrawal in withdrawals" :key="withdrawal.id">
+                                <tr class="hover:bg-gray-700/30">
+                                    <td class="px-4 py-3">
+                                        <div>
+                                            <p class="font-medium" x-text="withdrawal.full_name || withdrawal.username"></p>
+                                            <p class="text-xs text-gray-400" x-text="withdrawal.email"></p>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 font-semibold text-red-400" x-text="'$' + withdrawal.amount.toLocaleString()"></td>
+                                    <td class="px-4 py-3 text-sm" x-text="withdrawal.payment_method || 'Crypto'"></td>
+                                    <td class="px-4 py-3 text-xs text-gray-400 max-w-[150px] truncate" x-text="withdrawal.wallet_address"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-400" x-text="formatDate(withdrawal.created_at)"></td>
+                                    <td class="px-4 py-3">
+                                        <span :class="{
+                                            'bg-yellow-600/20 text-yellow-400': withdrawal.status === 'pending',
+                                            'bg-green-600/20 text-green-400': withdrawal.status === 'completed',
+                                            'bg-red-600/20 text-red-400': withdrawal.status === 'rejected'
+                                        }" class="px-2 py-1 rounded text-xs capitalize" x-text="withdrawal.status"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <template x-if="withdrawal.status === 'pending'">
+                                            <div class="flex gap-2">
+                                                <button @click="approveWithdrawal(withdrawal.id)" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 rounded text-xs font-medium transition-colors">Approve</button>
+                                                <button @click="rejectWithdrawal(withdrawal.id)" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded text-xs font-medium transition-colors">Reject</button>
+                                            </div>
+                                        </template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <template x-if="withdrawals.length === 0">
+                        <div class="p-8 text-center text-gray-400">No withdrawals found</div>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'subscriptions'" class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Subscription Payments</h2>
+                    <select x-model="subscriptionFilter" @change="loadSubscriptions()" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm">
+                        <option value="pending">Pending</option>
+                        <option value="active">Active</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-700/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">User</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Amount</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">TXID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <template x-for="sub in subscriptions" :key="sub.id">
+                                <tr class="hover:bg-gray-700/30">
+                                    <td class="px-4 py-3">
+                                        <div>
+                                            <p class="font-medium" x-text="sub.full_name || sub.username"></p>
+                                            <p class="text-xs text-gray-400" x-text="sub.email"></p>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-purple-600/20 text-purple-400 rounded text-xs" x-text="sub.subscription_type"></span>
+                                    </td>
+                                    <td class="px-4 py-3 font-semibold text-green-400" x-text="'$' + sub.amount.toLocaleString()"></td>
+                                    <td class="px-4 py-3 text-xs text-gray-400 max-w-[150px] truncate" x-text="sub.txid || '-'"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-400" x-text="formatDate(sub.created_at)"></td>
+                                    <td class="px-4 py-3">
+                                        <span :class="{
+                                            'bg-yellow-600/20 text-yellow-400': sub.status === 'pending',
+                                            'bg-green-600/20 text-green-400': sub.status === 'active',
+                                            'bg-red-600/20 text-red-400': sub.status === 'expired'
+                                        }" class="px-2 py-1 rounded text-xs capitalize" x-text="sub.status"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <template x-if="sub.status === 'pending'">
+                                            <button @click="approveSubscription(sub.id)" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 rounded text-xs font-medium transition-colors">Approve</button>
+                                        </template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <template x-if="subscriptions.length === 0">
+                        <div class="p-8 text-center text-gray-400">No subscriptions found</div>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'users'" class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="p-4 border-b border-gray-700">
+                    <h2 class="text-lg font-semibold">All Users</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-700/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">User</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Country</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Balance</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Demo</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Joined</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Last Login</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <template x-for="user in users" :key="user.id">
+                                <tr class="hover:bg-gray-700/30">
+                                    <td class="px-4 py-3">
+                                        <div>
+                                            <p class="font-medium" x-text="user.full_name || user.username"></p>
+                                            <p class="text-xs text-gray-400" x-text="user.email"></p>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm" x-text="user.country || '-'"></td>
+                                    <td class="px-4 py-3 font-semibold text-green-400" x-text="'$' + (user.balance || 0).toLocaleString()"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-400" x-text="'$' + (user.demo_balance || 0).toLocaleString()"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-400" x-text="formatDate(user.created_at)"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-400" x-text="user.last_login ? formatDate(user.last_login) : 'Never'"></td>
+                                    <td class="px-4 py-3">
+                                        <span :class="user.is_verified ? 'bg-green-600/20 text-green-400' : 'bg-gray-600/20 text-gray-400'" class="px-2 py-1 rounded text-xs" x-text="user.is_verified ? 'Verified' : 'Unverified'"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <template x-if="users.length === 0">
+                        <div class="p-8 text-center text-gray-400">No users found</div>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'signups'" class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">New User Signups</h2>
+                    <select x-model="signupDays" @change="loadSignups()" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm">
+                        <option value="1">Last 24 Hours</option>
+                        <option value="7">Last 7 Days</option>
+                        <option value="30">Last 30 Days</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-700/50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Name</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Email</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Country</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Signed Up</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <template x-for="signup in signups" :key="signup.id">
+                                <tr class="hover:bg-gray-700/30">
+                                    <td class="px-4 py-3 font-medium" x-text="signup.full_name || signup.username"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-400" x-text="signup.email"></td>
+                                    <td class="px-4 py-3 text-sm" x-text="signup.country || '-'"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-400" x-text="formatDate(signup.created_at)"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <template x-if="signups.length === 0">
+                        <div class="p-8 text-center text-gray-400">No new signups in this period</div>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'rules'" class="space-y-6">
+                <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
+                    <h2 class="text-lg font-semibold mb-4">Create Trade Rule</h2>
+                    <p class="text-sm text-gray-400 mb-4">Set profit/loss rules for specific assets. Positive percentage = profit, negative = loss.</p>
+                    <form @submit.prevent="createRule()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Asset</label>
+                            <select x-model="newRule.asset" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm">
+                                <option value="">Select Asset</option>
+                                <option value="BTC/USD">BTC/USD</option>
+                                <option value="ETH/USD">ETH/USD</option>
+                                <option value="EUR/USD">EUR/USD</option>
+                                <option value="GBP/USD">GBP/USD</option>
+                                <option value="USD/JPY">USD/JPY</option>
+                                <option value="XAU/USD">XAU/USD</option>
+                                <option value="SOL/USD">SOL/USD</option>
+                                <option value="BNB/USD">BNB/USD</option>
+                                <option value="ADA/USD">ADA/USD</option>
+                                <option value="DOGE/USD">DOGE/USD</option>
+                                <option value="XRP/USD">XRP/USD</option>
+                                <option value="DOT/USD">DOT/USD</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Profit/Loss %</label>
+                            <input type="number" x-model="newRule.profit_percentage" step="0.1" required placeholder="e.g. 80 or -100" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Start Time</label>
+                            <input type="time" x-model="newRule.start_time" :disabled="newRule.apply_all_time" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm disabled:opacity-50">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">End Time</label>
+                            <input type="time" x-model="newRule.end_time" :disabled="newRule.apply_all_time" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm disabled:opacity-50">
+                        </div>
+                        <div class="flex flex-col justify-end gap-2">
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" x-model="newRule.apply_all_time" class="rounded bg-gray-700 border-gray-600">
+                                Apply All Time
+                            </label>
+                            <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition-colors">Create Rule</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                    <div class="p-4 border-b border-gray-700">
+                        <h2 class="text-lg font-semibold">Active Trade Rules</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-700/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Asset</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Profit/Loss</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Time Range</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Created</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                                <template x-for="rule in tradeRules" :key="rule.id">
+                                    <tr class="hover:bg-gray-700/30">
+                                        <td class="px-4 py-3 font-medium" x-text="rule.asset"></td>
+                                        <td class="px-4 py-3">
+                                            <span :class="rule.profit_percentage >= 0 ? 'text-green-400' : 'text-red-400'" class="font-semibold" x-text="(rule.profit_percentage >= 0 ? '+' : '') + rule.profit_percentage + '%'"></span>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <span x-text="rule.apply_all_time ? 'All Time' : (rule.start_time + ' - ' + rule.end_time)"></span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span :class="rule.is_active ? 'bg-green-600/20 text-green-400' : 'bg-gray-600/20 text-gray-400'" class="px-2 py-1 rounded text-xs" x-text="rule.is_active ? 'Active' : 'Inactive'"></span>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-400" x-text="formatDate(rule.created_at)"></td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex gap-2">
+                                                <button @click="toggleRule(rule.id, !rule.is_active)" :class="rule.is_active ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'" class="px-3 py-1.5 rounded text-xs font-medium transition-colors" x-text="rule.is_active ? 'Disable' : 'Enable'"></button>
+                                                <button @click="deleteRule(rule.id)" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded text-xs font-medium transition-colors">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <template x-if="tradeRules.length === 0">
+                            <div class="p-8 text-center text-gray-400">No trade rules configured</div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function adminDashboard() {
+            return {
+                activeTab: 'deposits',
+                stats: { total_users: 0, new_users_today: 0, pending_deposits: 0, pending_withdrawals: 0, pending_subscriptions: 0, active_trade_rules: 0 },
+                deposits: [],
+                withdrawals: [],
+                subscriptions: [],
+                users: [],
+                signups: [],
+                tradeRules: [],
+                depositFilter: 'pending',
+                withdrawalFilter: 'pending',
+                subscriptionFilter: 'pending',
+                signupDays: 7,
+                newRule: { asset: '', profit_percentage: 0, start_time: '', end_time: '', apply_all_time: false },
+
+                async init() {
+                    const authCheck = await fetch('/api/auth/check');
+                    const authData = await authCheck.json();
+                    if (!authData.authenticated) {
+                        window.location.href = 'ADMIN-LOGIN.html';
+                        return;
+                    }
+                    
+                    await this.loadStats();
+                    await Promise.all([
+                        this.loadDeposits(),
+                        this.loadWithdrawals(),
+                        this.loadSubscriptions(),
+                        this.loadUsers(),
+                        this.loadSignups(),
+                        this.loadTradeRules()
+                    ]);
+                    lucide.createIcons();
+                },
+
+                async loadStats() {
+                    try {
+                        const res = await fetch('/api/admin/stats');
+                        const data = await res.json();
+                        if (data.success) this.stats = data.stats;
+                    } catch (e) { console.error('Failed to load stats', e); }
+                },
+
+                async loadDeposits() {
+                    try {
+                        const res = await fetch(`/api/admin/deposits?status=${this.depositFilter}`);
+                        const data = await res.json();
+                        if (data.success) this.deposits = data.deposits;
+                    } catch (e) { console.error('Failed to load deposits', e); }
+                },
+
+                async loadWithdrawals() {
+                    try {
+                        const res = await fetch(`/api/admin/withdrawals?status=${this.withdrawalFilter}`);
+                        const data = await res.json();
+                        if (data.success) this.withdrawals = data.withdrawals;
+                    } catch (e) { console.error('Failed to load withdrawals', e); }
+                },
+
+                async loadSubscriptions() {
+                    try {
+                        const res = await fetch(`/api/admin/subscriptions?status=${this.subscriptionFilter}`);
+                        const data = await res.json();
+                        if (data.success) this.subscriptions = data.subscriptions;
+                    } catch (e) { console.error('Failed to load subscriptions', e); }
+                },
+
+                async loadUsers() {
+                    try {
+                        const res = await fetch('/api/admin/users');
+                        const data = await res.json();
+                        if (data.success) this.users = data.users;
+                    } catch (e) { console.error('Failed to load users', e); }
+                },
+
+                async loadSignups() {
+                    try {
+                        const res = await fetch(`/api/admin/new-signups?days=${this.signupDays}`);
+                        const data = await res.json();
+                        if (data.success) this.signups = data.new_signups;
+                    } catch (e) { console.error('Failed to load signups', e); }
+                },
+
+                async loadTradeRules() {
+                    try {
+                        const res = await fetch('/api/admin/trade-rules');
+                        const data = await res.json();
+                        if (data.success) this.tradeRules = data.rules;
+                    } catch (e) { console.error('Failed to load trade rules', e); }
+                },
+
+                async acceptDeposit(id) {
+                    const result = await Swal.fire({
+                        title: 'Accept Deposit?',
+                        text: 'This will credit the funds to the user\'s live account.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#22c55e',
+                        confirmButtonText: 'Yes, Accept'
+                    });
+                    if (result.isConfirmed) {
+                        const res = await fetch(`/api/admin/deposits/${id}/accept`, { method: 'POST' });
+                        const data = await res.json();
+                        if (data.success) {
+                            Swal.fire('Accepted!', data.message, 'success');
+                            await this.loadDeposits();
+                            await this.loadStats();
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    }
+                },
+
+                async rejectDeposit(id) {
+                    const { value: reason } = await Swal.fire({
+                        title: 'Reject Deposit',
+                        input: 'text',
+                        inputLabel: 'Reason for rejection',
+                        inputPlaceholder: 'Enter reason...',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'Reject'
+                    });
+                    if (reason !== undefined) {
+                        const res = await fetch(`/api/admin/deposits/${id}/reject`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ reason: reason || 'Deposit verification failed' })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            Swal.fire('Rejected', 'Deposit has been rejected.', 'info');
+                            await this.loadDeposits();
+                            await this.loadStats();
+                        }
+                    }
+                },
+
+                async approveWithdrawal(id) {
+                    const result = await Swal.fire({
+                        title: 'Approve Withdrawal?',
+                        text: 'This will process the withdrawal and deduct from user\'s balance.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#22c55e',
+                        confirmButtonText: 'Yes, Approve'
+                    });
+                    if (result.isConfirmed) {
+                        const res = await fetch(`/api/admin/withdrawals/${id}/approve`, { method: 'POST' });
+                        const data = await res.json();
+                        if (data.success) {
+                            Swal.fire('Approved!', data.message, 'success');
+                            await this.loadWithdrawals();
+                            await this.loadStats();
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    }
+                },
+
+                async rejectWithdrawal(id) {
+                    const { value: reason } = await Swal.fire({
+                        title: 'Reject Withdrawal',
+                        input: 'text',
+                        inputLabel: 'Reason for rejection',
+                        inputPlaceholder: 'Enter reason...',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'Reject'
+                    });
+                    if (reason !== undefined) {
+                        const res = await fetch(`/api/admin/withdrawals/${id}/reject`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ reason: reason || 'Withdrawal request denied' })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            Swal.fire('Rejected', 'Withdrawal has been rejected.', 'info');
+                            await this.loadWithdrawals();
+                            await this.loadStats();
+                        }
+                    }
+                },
+
+                async approveSubscription(id) {
+                    const result = await Swal.fire({
+                        title: 'Approve Subscription?',
+                        text: 'This will activate the user\'s subscription.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#22c55e',
+                        confirmButtonText: 'Yes, Approve'
+                    });
+                    if (result.isConfirmed) {
+                        const res = await fetch(`/api/admin/subscriptions/${id}/approve`, { method: 'POST' });
+                        const data = await res.json();
+                        if (data.success) {
+                            Swal.fire('Approved!', 'Subscription activated.', 'success');
+                            await this.loadSubscriptions();
+                            await this.loadStats();
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    }
+                },
+
+                async createRule() {
+                    if (!this.newRule.asset || this.newRule.profit_percentage === '') {
+                        Swal.fire('Error', 'Asset and profit/loss percentage are required.', 'error');
+                        return;
+                    }
+                    const res = await fetch('/api/admin/trade-rules', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.newRule)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        Swal.fire('Created!', 'Trade rule has been created.', 'success');
+                        this.newRule = { asset: '', profit_percentage: 0, start_time: '', end_time: '', apply_all_time: false };
+                        await this.loadTradeRules();
+                        await this.loadStats();
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                },
+
+                async toggleRule(id, isActive) {
+                    const res = await fetch(`/api/admin/trade-rules/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ is_active: isActive })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        await this.loadTradeRules();
+                        await this.loadStats();
+                    }
+                },
+
+                async deleteRule(id) {
+                    const result = await Swal.fire({
+                        title: 'Delete Rule?',
+                        text: 'This action cannot be undone.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'Yes, Delete'
+                    });
+                    if (result.isConfirmed) {
+                        const res = await fetch(`/api/admin/trade-rules/${id}`, { method: 'DELETE' });
+                        const data = await res.json();
+                        if (data.success) {
+                            Swal.fire('Deleted!', 'Trade rule has been removed.', 'success');
+                            await this.loadTradeRules();
+                            await this.loadStats();
+                        }
+                    }
+                },
+
+                async logout() {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    window.location.href = 'ADMIN-LOGIN.html';
+                },
+
+                formatDate(dateStr) {
+                    if (!dateStr) return '-';
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
