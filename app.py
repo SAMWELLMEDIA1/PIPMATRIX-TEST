@@ -1,18 +1,30 @@
-from flask import Flask, request, jsonify, session, redirect, url_for, send_from_directory
 import os
 import io
 import base64
 from functools import wraps
+from flask import Flask, request, jsonify, session, redirect, url_for, send_from_directory
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from models import db, User, Account, Transaction, Investment, Trade, Loan, CopyTrading, BotTrading, Referral, SupportTicket, Notification, TradeRule, Subscription
 from datetime import datetime, timedelta
 import secrets
 import qrcode
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
+# SQLite setup (file-based database)
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize the database
+db = SQLAlchemy(app)
+
+from models import User, Account, Transaction, Investment, Trade, Loan, CopyTrading, BotTrading, Referral, SupportTicket, Notification, TradeRule, Subscription
+
+with app.app_context():
+    db.create_all()
+
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_pre_ping': True}
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
@@ -71,7 +83,6 @@ CRYPTO_WALLETS = {
     }
 }
 
-db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -92,6 +103,13 @@ def generate_qr_code(data):
     buffer.seek(0)
     img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
     return f"data:image/png;base64,{img_base64}"
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route('/')
 def index():
